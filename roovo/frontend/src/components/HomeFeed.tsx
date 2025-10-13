@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import ListingSection from './ListingSection';
+import { API_BASE_URL } from '@/services/api';
 
 // --- Type Definitions (can be moved to a types.ts file) ---
 interface ApiLocation {
@@ -32,7 +33,7 @@ const HomeFeed: React.FC = () => {
       setError(null);
       try {
         // NOTE: Make sure your local server is running at this address
-        const response = await fetch('http://localhost:3002/api/listings');
+        const response = await fetch(`${API_BASE_URL}/api/listings`);
         if (!response.ok) {
           throw new Error('Failed to fetch listings');
         }

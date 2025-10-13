@@ -1,11 +1,14 @@
 "use client";
 
+"use client";
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ListingConfirmation from '@/components/import/ListingConfirmation';
 import { ListingData } from '@/types';
 import { MultiStepLoader as Loader } from '@/components/ui/multi-step-loader';
 import Image from 'next/image';
+import { API_BASE_URL } from '@/services/api';
 
 const loadingStates = [
   {
@@ -36,7 +39,7 @@ const ImportListingPage = () => {
 
     setTimeout(async () => {
       try {
-        const response = await fetch('http://localhost:3002/api/scrape', {
+        const response = await fetch(`${API_BASE_URL}/api/scrape`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
