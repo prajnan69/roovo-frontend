@@ -6,7 +6,7 @@ const TrustAndSafety = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">Trust & Safety</h1>
         <p className="text-center text-gray-400 mb-12">
-          Your security is our priority. We've built a foundation of trust with tools and support to help you feel confident and safe.
+          Your security is our priority. We&apos;ve built a foundation of trust with tools and support to help you feel confident and safe.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

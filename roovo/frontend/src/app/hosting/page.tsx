@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 const HostingPage = () => {
   return (
@@ -13,7 +14,7 @@ const HostingPage = () => {
         className="w-full max-w-4xl text-center"
       >
         <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Join our hosting community</h1>
-        <p className="text-slate-600 mb-12">Choose the path that's right for you.</p>
+        <p className="text-slate-600 mb-12">Choose the path that&apos;s right for you.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Link href="/import-listing">
             <motion.div
@@ -21,7 +22,7 @@ const HostingPage = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <img src="/icons/rehost.png" alt="Already hosted" className="w-24 h-24 mb-4" />
+              <Image src="/icons/rehost.png" alt="Already hosted" width={96} height={96} className="mb-4" />
               <span className="text-xl font-semibold text-slate-800">Already hosted</span>
               <p className="text-slate-500 mt-2">Import your existing listing from another site.</p>
             </motion.div>
@@ -32,7 +33,7 @@ const HostingPage = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <img src="/icons/newhost.png" alt="New to hosting" className="w-24 h-24 mb-4" />
+              <Image src="/icons/newhost.png" alt="New to hosting" width={96} height={96} className="mb-4" />
               <span className="text-xl font-semibold text-slate-800">New to hosting</span>
               <p className="text-slate-500 mt-2">Create a new listing from scratch.</p>
             </motion.div>

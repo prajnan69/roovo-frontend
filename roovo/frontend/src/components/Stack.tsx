@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface CardRotateProps {
   children: React.ReactNode;
@@ -121,7 +122,7 @@ export default function Stack({
                 height: cardDimensions.height
               }}
             >
-              <img src={card.img} alt={`card-${card.id}`} className="w-full h-full object-cover pointer-events-none" />
+              <Image src={card.img} alt={`card-${card.id}`} width={cardDimensions.width} height={cardDimensions.height} className="w-full h-full object-cover pointer-events-none" />
             </motion.div>
           </CardRotate>
         );

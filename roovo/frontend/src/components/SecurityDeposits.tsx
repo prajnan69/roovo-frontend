@@ -27,7 +27,7 @@ const SecurityDeposits = () => {
             <div className="border border-gray-700 bg-gray-900 p-6">
               <h2 className="text-xl font-bold mb-4">Deposit Settings</h2>
               <p className="text-gray-400 mb-4">
-                Require a security deposit to cover damages. This is a hold on the guest's payment method.
+                Require a security deposit to cover damages. This is a hold on the guest&apos;s payment method.
               </p>
               <div>
                 <label className="block text-sm font-medium text-gray-400">Default Deposit Amount</label>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 interface ImageGalleryProps {
   images: { url: string; alt: string }[];
@@ -38,7 +39,7 @@ const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProps) => {
           className="relative"
           onClick={(e) => e.stopPropagation()}
         >
-          <img src={images[currentIndex].url} alt={images[currentIndex].alt} className="max-h-[80vh] max-w-[80vw] rounded-lg" />
+          <Image src={images[currentIndex].url} alt={images[currentIndex].alt} width={800} height={600} className="max-h-[80vh] max-w-[80vw] rounded-lg" />
           <h2 className="text-white text-2xl font-bold mt-4 text-center">{images[currentIndex].alt}</h2>
           <button
             onClick={onClose}

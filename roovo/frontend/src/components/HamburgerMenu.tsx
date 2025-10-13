@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
   Briefcase,
-  Calendar,
   HelpCircle,
   LogOut,
   Search,

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import supabase from '@/services/api';
+import Image from 'next/image';
 
 interface LoginProps {
   isOpen: boolean;
@@ -39,8 +40,12 @@ const Login = ({ isOpen, onClose, onLoginSuccess, title, subtitle }: LoginProps)
 
       onLoginSuccess();
       onClose();
-    } catch (error: any) {
-      setError(error.message || 'An unexpected error occurred.');
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred.');
+      }
     }
   };
 
@@ -72,7 +77,7 @@ const Login = ({ isOpen, onClose, onLoginSuccess, title, subtitle }: LoginProps)
 
             {/* Left Panel */}
             <div className="w-1/2 bg-slate-100 p-12 flex flex-col justify-center items-center text-center">
-              <img src="/icons/login.png" alt="Login illustration" className="w-48 h-48 mb-6" />
+              <Image src="/icons/login.png" alt="Login illustration" width={192} height={192} className="mb-6" />
               <h2 className="text-3xl font-bold text-slate-900">{title || "Welcome Back"}</h2>
               <p className="mt-2 text-slate-600">{subtitle || "Log in to continue your journey with Roovo."}</p>
             </div>

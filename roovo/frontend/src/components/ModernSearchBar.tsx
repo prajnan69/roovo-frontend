@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import dayjs from "dayjs";
 import SlidingText from "./SlidingText";
+import Image from "next/image";
 
 export const transition = { type: "spring", stiffness: 300, damping: 30 } as const;
 
@@ -15,9 +16,6 @@ const destinations = [
   { name: "Goa", img: "/goa.png" },
   { name: "Chennai", img: "/chennai.png" },
 ];
-
-// --- Type Definitions ---
-type DateState = { checkIn: Date | null; checkOut: Date | null };
 
 // --- Animation Variants (for staggering) ---
 const dropdownVariants = {
@@ -85,7 +83,6 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
   
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const prefersReducedMotion = useReducedMotion();
-  const [triggerShimmer, setTriggerShimmer] = useState(false);
 
   // --- Effects ---
 
@@ -124,18 +121,6 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     const timeoutId = setTimeout(updateHighlight, 50);
     return () => { window.removeEventListener("resize", updateHighlight); clearTimeout(timeoutId); };
   }, [activeSection]);
-
-  // Effect to trigger shimmer on "Next" button when dates are selected
-  useEffect(() => {
-    if (dates.checkIn && dates.checkOut) {
-      const shimmerTimeout = setTimeout(() => {
-        setTriggerShimmer(true);
-      }, 500); // Match the footer's delay
-      return () => clearTimeout(shimmerTimeout);
-    } else {
-      setTriggerShimmer(false);
-    }
-  }, [dates.checkIn, dates.checkOut]);
 
   // Effect for handling clicks outside to collapse dropdowns
   useEffect(() => {
@@ -190,12 +175,12 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
       if (friday.isBefore(today, 'day')) { // If Friday has passed, get next week's Friday
         friday = friday.add(7, 'day');
       }
-      let sunday = friday.add(2, 'day'); // Sunday is 2 days after Friday
+      const sunday = friday.add(2, 'day'); // Sunday is 2 days after Friday
       newCheckIn = friday.toDate();
       newCheckOut = sunday.toDate();
     } else if (period === "nextWeek") {
-      let nextMonday = today.add(1, 'week').startOf('week').day(1);
-      let nextSunday = today.add(1, 'week').endOf('week').day(0);
+      const nextMonday = today.add(1, 'week').startOf('week').day(1);
+      const nextSunday = today.add(1, 'week').endOf('week').day(0);
       newCheckIn = nextMonday.toDate();
       newCheckOut = nextSunday.toDate();
     } else if (period === "month") {
@@ -266,7 +251,7 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             <div ref={whoRef} className="flex-1 px-5 py-2 rounded-full cursor-pointer transition-all duration-300 relative z-10" onClick={() => setActiveSection("who")}>
               <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
                 <p className="text-xs font-semibold text-slate-500">🫂 Who</p>
-                <p className="text-sm font-bold text-slate-900">{guestSummary}</p>
+                <p className="text-sm font-bold text-slate-900">{guestSummary === "Who's joining?" ? "Who's joining?" : guestSummary}</p>
               </motion.div>
             </div>
             
@@ -298,7 +283,7 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             className="absolute top-16 left-0 w-full flex gap-6 p-4 bg-slate-50 rounded-3xl shadow-xl shadow-slate-400/10 border border-slate-200/80"
           >
             <div className="flex-1">
-              <motion.h3 variants={itemVariants} className="text-lg font-bold text-slate-800 mb-4">Let's find your next vibe ✨</motion.h3>
+              <motion.h3 variants={itemVariants} className="text-lg font-bold text-slate-800 mb-4">Let&apos;s find your next vibe ✨</motion.h3>
               <div className="grid grid-cols-3 gap-4">
                 {destinations.map((city) => (
                   <motion.div
@@ -319,7 +304,9 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             </div>
             <motion.div variants={itemVariants} className="flex-1 flex items-center justify-center">
               <AnimatePresence mode="wait">
-                <motion.img key={hoveredCity ? hoveredCity.name : selectedCity.name} src={hoveredCity ? hoveredCity.img : selectedCity.img} alt={hoveredCity ? hoveredCity.name : selectedCity.name} className="w-full h-64 object-contain rounded-xl" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }} />
+                <motion.div key={hoveredCity ? hoveredCity.name : selectedCity.name} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}>
+                  <Image src={hoveredCity ? hoveredCity.img : selectedCity.img} alt={hoveredCity ? hoveredCity.name : selectedCity.name} width={500} height={400} className="w-full h-64 object-contain rounded-xl" />
+                </motion.div>
               </AnimatePresence>
             </motion.div>
           </motion.div>
@@ -414,7 +401,7 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             className="absolute top-16 left-0 w-full p-6 bg-slate-50 rounded-3xl shadow-xl shadow-slate-400/10 border border-slate-200/80 flex flex-col"
           >
             <motion.div variants={itemVariants}>
-              <h3 className="text-xl font-bold text-slate-800">Who's joining the adventure? 🫂</h3>
+              <h3 className="text-xl font-bold text-slate-800">Who&apos;s joining the adventure? 🫂</h3>
               <p className="text-sm text-slate-500 mb-6">Your trip is for {totalNights} nights in {selectedCity.name}.</p>
             </motion.div>
             <div className="flex flex-col">

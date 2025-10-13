@@ -38,7 +38,7 @@ const HomeFeed: React.FC = () => {
         }
         const data = await response.json();
         // Add a random rating for demonstration purposes if not present
-        const listingsWithExtras = (data.data || []).map((listing: any) => ({
+        const listingsWithExtras = (data.data || []).map((listing: Listing) => ({
           ...listing,
           rating: listing.rating || (Math.random() * (5.0 - 4.2) + 4.2).toFixed(1),
         }));

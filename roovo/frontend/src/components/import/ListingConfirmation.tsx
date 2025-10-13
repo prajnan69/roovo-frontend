@@ -5,12 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   Users,
-  Wifi,
   CheckCircle2,
   Home,
   ArrowRight,
   Star,
-  User,
   ChevronDown,
   Award,
   XCircle,
@@ -19,6 +17,7 @@ import {
 import { ListingData } from "@/types";
 import CircularGallery from "../CircularGallery";
 import { FireworksBackground } from "../Fireworks";
+import Image from "next/image";
 
 const fadeInUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -69,7 +68,6 @@ const BedIcon = () => (
 export default function ListingConfirmationRedesigned({
   data,
   onConfirm,
-  onCancel
 }: {
   data: ListingData;
   onConfirm: () => void;
@@ -78,11 +76,9 @@ export default function ListingConfirmationRedesigned({
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [propertyDescription, setPropertyDescription] = useState(data.propertyDescription?.summary || '');
-  const [isHostAboutEditing, setIsHostAboutEditing] = useState(false);
   const [hostAbout, setHostAbout] = useState(data.hostInfo?.about || '');
   const [currentAmenities, setCurrentAmenities] = useState(data.amenities?.included || []);
   const [imageIndex, setImageIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState<{ url: string; alt: string } | null>(null);
   const [showGallery, setShowGallery] = useState(false);
   const [showFireworks, setShowFireworks] = useState(true);
 
@@ -265,10 +261,11 @@ export default function ListingConfirmationRedesigned({
                 <div className="flex items-center gap-6">
                   <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg">
                     {data.hostInfo.photoUrl ? (
-                      <img
+                      <Image
                         src={data.hostInfo.photoUrl}
                         alt={data.hostInfo.name}
                         className="w-full h-full object-cover"
+                        layout="fill"
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -299,25 +296,10 @@ export default function ListingConfirmationRedesigned({
                     </div>
 
                     {data.hostInfo.about && (
-                      isHostAboutEditing ? (
-                        <textarea
-                          value={hostAbout}
-                          onChange={(e) => setHostAbout(e.target.value)}
-                          className="w-full text-gray-500 text-base mt-3 max-w-lg leading-relaxed border rounded-md p-2"
-                          rows={4}
-                        />
-                      ) : (
-                        <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
-                          {hostAbout}
-                        </p>
-                      )
+                      <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
+                        {hostAbout}
+                      </p>
                     )}
-                    {/* <button
-                      onClick={() => setIsHostAboutEditing(!isHostAboutEditing)}
-                      className="mt-2 inline-flex items-center gap-2 text-indigo-600 font-semibold text-base hover:text-indigo-800 transition-colors"
-                    >
-                      {isHostAboutEditing ? "Save" : "Edit About"}
-                    </button> */}
                   </div>
                 </div>
               </div>

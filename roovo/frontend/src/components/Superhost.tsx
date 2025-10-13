@@ -3,11 +3,11 @@
 const Superhost = () => {
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 md:p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Superhost Status</h1>
-          <p className="text-gray-400">
-            Track your progress toward becoming a Superhost and enjoying exclusive benefits.
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            You&apos;re on your way to becoming a Superhost! Here&apos;s a summary of your performance over the past year.
           </p>
         </div>
 
@@ -40,7 +40,7 @@ const Superhost = () => {
             </div>
           </div>
           <div className="mt-8 text-center">
-            <p className="text-lg text-green-400 font-bold">Congratulations! You've met all the requirements.</p>
+            <p className="text-lg text-green-400 font-bold">Congratulations! You&apos;ve met all the requirements.</p>
             <p className="text-gray-400">Next assessment is on Jan 1, 2025.</p>
           </div>
         </div>

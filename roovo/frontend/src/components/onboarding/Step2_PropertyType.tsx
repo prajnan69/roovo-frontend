@@ -14,11 +14,11 @@ const propertyTypes = [
 ];
 
 interface Step2PropertyTypeProps {
-  onBack: () => void;
   onSelect: (type: string) => void;
+  onBack: () => void;
 }
 
-const Step2_PropertyType = ({ onBack, onSelect }: Step2PropertyTypeProps) => {
+const Step2_PropertyType = ({ onSelect }: Step2PropertyTypeProps) => {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-2xl">

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 type Image = {
   src: string;
@@ -9,11 +10,9 @@ type Image = {
 
 export const AnimatedImages = ({
   images,
-  autoplay = false,
   active,
 }: {
   images: Image[];
-  autoplay?: boolean;
   active: number;
 }) => {
   const isActive = (index: number) => index === active;
@@ -62,11 +61,12 @@ export const AnimatedImages = ({
               }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <img
+              <Image
                 src={image.src}
                 alt={image.name}
                 draggable={false}
                 className="h-full w-full rounded-2xl object-cover shadow-lg"
+                layout="fill"
               />
             </motion.div>
           );

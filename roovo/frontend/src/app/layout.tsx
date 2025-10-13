@@ -5,12 +5,11 @@ import "./globals.css";
 import ModernSearchBar, { transition } from "@/components/ModernSearchBar";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import dayjs from "dayjs";
 import HamburgerMenu from "@/components/HamburgerMenu";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Login from "@/components/Login";
 import BecomeAHost from "@/components/BecomeAHost";
+import Image from "next/image";
 
 const inter = Inter({
 variable: "--font-inter",
@@ -136,7 +135,7 @@ export default function RootLayout({
               <div className="flex-1 flex justify-end">
                 <div className="flex items-center space-x-4">
                   <button onClick={() => setIsBecomeAHostOpen(true)} className="flex items-center gap-2 text-slate-700 font-medium hover:text-indigo-600 transition-colors whitespace-nowrap group cursor-pointer">
-                    <img src="/icons/become_host.png" alt="Become a host" className="w-12 h-12 transition-transform duration-300 group-hover:scale-110" />
+                    <Image src="/icons/become_host.png" alt="Become a host" width={48} height={48} className="transition-transform duration-300 group-hover:scale-110" />
                     <span>Become a host</span>
                   </button>
                   {isLoggedIn ? (

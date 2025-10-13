@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import ListingConfirmation from '@/components/import/ListingConfirmation';
 import { ListingData } from '@/types';
 import { MultiStepLoader as Loader } from '@/components/ui/multi-step-loader';
+import Image from 'next/image';
 
 const loadingStates = [
   {
@@ -66,8 +65,12 @@ const ImportListingPage = () => {
         };
 
         setScrapedData(transformedData);
-      } catch (err: any) {
-        setError(err.message || 'An unexpected error occurred.');
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unexpected error occurred.');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -102,7 +105,7 @@ const ImportListingPage = () => {
               className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
             >
               <div className="text-center md:text-left">
-                <img src="/icons/import_listing.png" alt="Import Listing" className="w-56 h-56 mx-auto md:mx-0 mb-6" />
+                <Image src="/icons/import_listing.png" alt="Import Listing" width={224} height={224} className="mx-auto md:mx-0 mb-6" />
                 <h1 className="text-4xl font-bold text-slate-900 mb-4">Import your listing</h1>
                 <p className="text-slate-600">
                   Enter the URL of your existing listing to automatically import your property details, amenities, and photos.

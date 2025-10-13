@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BecomeAHostProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ const BecomeAHost = ({ isOpen, onClose }: BecomeAHostProps) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <img src="/icons/rehost.png" alt="Already hosted" className="w-24 h-24 mb-4" />
+                  <Image src="/icons/rehost.png" alt="Already hosted" width={96} height={96} className="mb-4" />
                   <span className="text-xl font-semibold text-slate-800">Already hosted</span>
                   <p className="text-slate-500 mt-2">Import your existing listing from another site.</p>
                 </motion.div>
@@ -46,7 +47,7 @@ const BecomeAHost = ({ isOpen, onClose }: BecomeAHostProps) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <img src="/icons/newhost.png" alt="New to hosting" className="w-24 h-24 mb-4" />
+                  <Image src="/icons/newhost.png" alt="New to hosting" width={96} height={96} className="mb-4" />
                   <span className="text-xl font-semibold text-slate-800">New to hosting</span>
                   <p className="text-slate-500 mt-2">Create a new listing from scratch.</p>
                 </motion.div>

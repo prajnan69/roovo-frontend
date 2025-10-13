@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import Image from "next/image";
 
 interface Step1IntroProps {
   onNext: () => void;
@@ -21,8 +21,8 @@ const Step1_Intro = ({ onNext }: Step1IntroProps) => {
           </p>
         </div>
         <div className="flex flex-col space-y-4">
-          <img src="/icons/host_benefit_1.png" alt="Lower fees illustration" className="rounded-lg bg-gray-200 w-full h-48 object-cover" />
-          <img src="/icons/host_benefit_2.png" alt="More bookings illustration" className="rounded-lg bg-gray-200 w-full h-48 object-cover" />
+          <Image src="/icons/host_benefit_1.png" alt="Lower fees illustration" width={500} height={300} className="rounded-lg bg-gray-200 w-full h-48 object-cover" />
+          <Image src="/icons/host_benefit_2.png" alt="More bookings illustration" width={500} height={300} className="rounded-lg bg-gray-200 w-full h-48 object-cover" />
         </div>
       </div>
       <div className="mt-8 text-center">

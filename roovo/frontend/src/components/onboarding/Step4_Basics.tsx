@@ -26,7 +26,6 @@ const Step4_Basics = ({
   setBedrooms,
   setBeds,
   setBathrooms,
-  onBack,
   onFinish,
 }: Step4BasicsProps) => {
   return (

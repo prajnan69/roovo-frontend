@@ -100,7 +100,7 @@ const Reviews = () => {
                 </div>
               </div>
               <p>
-                "A fantastic stay! The apartment was spotless, and the host was incredibly responsive. The location is perfect for exploring the city. Highly recommended!"
+                A fantastic stay! The apartment was spotless, and the host was incredibly responsive. The location is perfect for exploring the city. Highly recommended!
               </p>
               <div className="flex mt-4">
                 {[...Array(5)].map((_, i) => <StarIcon key={i} filled={true} onClick={() => {}} />)}
@@ -117,7 +117,7 @@ const Reviews = () => {
                 </div>
               </div>
               <p>
-                "Great value for the price. The location was convenient, and the check-in process was smooth. The host provided excellent local recommendations."
+                Great value for the price. The location was convenient, and the check-in process was smooth. The host provided excellent local recommendations.
               </p>
               <div className="flex mt-4">
                 {[...Array(4)].map((_, i) => <StarIcon key={i} filled={true} onClick={() => {}} />)}

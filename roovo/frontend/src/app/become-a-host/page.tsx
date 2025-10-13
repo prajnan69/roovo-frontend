@@ -13,13 +13,10 @@ import Link from 'next/link';
 
 const BecomeAHostPage = () => {
   const [step, setStep] = useState(1);
-  const [propertyType, setPropertyType] = useState<string | null>(null);
-  const [hostingType, setHostingType] = useState<string | null>(null);
   const [guests, setGuests] = useState(0);
   const [bedrooms, setBedrooms] = useState(1);
   const [beds, setBeds] = useState(1);
   const [bathrooms, setBathrooms] = useState(1);
-  const [amenities, setAmenities] = useState<string[]>([]);
   const [direction, setDirection] = useState(1);
 
   const titles = [
@@ -40,13 +37,11 @@ const BecomeAHostPage = () => {
     setStep(step - 1);
   };
 
-  const handlePropertyTypeSelect = (name: string) => {
-    setPropertyType(name);
+  const handlePropertyTypeSelect = () => {
     nextStep();
   };
 
-  const handleHostingTypeSelect = (name: string) => {
-    setHostingType(name);
+  const handleHostingTypeSelect = () => {
     nextStep();
   };
 

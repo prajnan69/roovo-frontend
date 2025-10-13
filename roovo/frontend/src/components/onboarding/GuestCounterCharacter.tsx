@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface GuestCounterCharacterProps {
   guestCount: number;
@@ -37,10 +38,11 @@ const GuestCounterCharacter = ({ guestCount }: GuestCounterCharacterProps) => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="mx-[-10px]"
           >
-            <img 
+            <Image 
               src={`/guests/${char}.png`} 
               alt={`Character for ${char} guests`}
-              className="h-32"
+              width={128}
+              height={128}
             />
           </motion.div>
         ))}

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import ProgressBar from './ProgressBar';
 import { Wifi, Tv, Utensils, Wind, WashingMachine, ParkingCircle, Waves, Fan, Refrigerator, Microwave } from 'lucide-react';
 
 const allAmenities = [

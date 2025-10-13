@@ -49,7 +49,7 @@ const HelpCenter = () => {
           <div className="border border-gray-700 bg-gray-900 p-8">
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <p className="text-gray-400 mb-4">
-              Can't find what you're looking for? Our support team is here to help 24/7.
+              Can&apos;t find what you&apos;re looking for? Our support team is here to help 24/7.
             </p>
             <button className="w-full bg-white text-black font-bold py-3 hover:bg-gray-200">
               Get Support
