@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import HamburgerMenu from "@/components/HamburgerMenu";
 import { usePathname } from "next/navigation";
+import BottomNavBar from "@/components/BottomNavBar";
 import Login from "@/components/Login";
 import BecomeAHost from "@/components/BecomeAHost";
 import Image from "next/image";
@@ -31,12 +32,39 @@ export default function RootLayout({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isBecomeAHostOpen, setIsBecomeAHostOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Set to false to test the login flow
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState<{ title: string; subtitle: string } | null>(null);
+  const [redirectPath, setRedirectPath] = useState<string | undefined>(undefined);
   const headerRef = useRef<HTMLDivElement>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
+  const prevPathname = useRef(pathname);
   const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname === '/import-listing';
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Close the login modal when the route changes
+    if (prevPathname.current !== pathname && isLoginOpen) {
+      closeLogin();
+    }
+    prevPathname.current = pathname;
+  }, [pathname, isLoginOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,17 +102,20 @@ export default function RootLayout({
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     setIsLoggedIn(false);
     setIsMenuOpen(false);
   };
 
   const handleLoginSuccess = () => {
+    localStorage.setItem('token', 'dummy-token'); // In a real app, use a real token
     setIsLoggedIn(true);
   };
 
   const closeLogin = () => {
     setIsLoginOpen(false);
     setLoginMessage(null);
+    setRedirectPath(undefined);
   }
 
   return (
@@ -95,16 +126,30 @@ export default function RootLayout({
           onClose={closeLogin} 
           onLoginSuccess={handleLoginSuccess}
           title={loginMessage?.title} 
-          subtitle={loginMessage?.subtitle} 
+          subtitle={loginMessage?.subtitle}
+          redirectPath={redirectPath}
         />
-        <BecomeAHost isOpen={isBecomeAHostOpen} onClose={() => setIsBecomeAHostOpen(false)} />
+        <BecomeAHost 
+          isOpen={isBecomeAHostOpen} 
+          onClose={() => setIsBecomeAHostOpen(false)} 
+          isLoggedIn={isLoggedIn}
+          openLogin={(path) => {
+            setIsBecomeAHostOpen(false);
+            setIsLoginOpen(true);
+            setLoginMessage({ 
+              title: "Log in to start hosting", 
+              subtitle: "Create an account or log in to manage your listings." 
+            });
+            setRedirectPath(path);
+          }}
+        />
         {!isLoginPage && <HamburgerMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onLogout={handleLogout} />}
-        {!isLoginPage && (
+        {!isLoginPage && !isMobile && (
         <header 
           ref={headerRef}
           className="bg-white"
         >
-          <div className="container mx-auto px-6">
+          <div className="mx-auto px-6">
             <div className="relative flex items-center justify-between h-20">
               <div className="flex-1 flex justify-start">
                 <div className="text-2xl font-bold text-slate-900">Roovo</div>
@@ -180,15 +225,11 @@ export default function RootLayout({
               )}
             </AnimatePresence>
           </div>
-          <motion.div
-            className="h-px bg-slate-200 mx-auto"
-            animate={{ width: isScrolled ? "28rem" : "100%" }}
-            transition={transition}
-          />
         </header>
         )}
         
         {children}
+        {!isLoginPage && isMobile && <BottomNavBar />}
       </body>
     </html>
   );

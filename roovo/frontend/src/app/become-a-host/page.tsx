@@ -71,8 +71,8 @@ const BecomeAHostPage = () => {
             </button>
           ) : <div />}
           <h2 className="text-xl font-bold text-slate-900">{titles[step - 1]}</h2>
-          <Link href="/" className="text-gray-500 hover:text-gray-900 transition-colors cursor-pointer z-10">
-            <X size={24} />
+          <Link href="/" className="text-gray-500 hover:text-gray-900 transition-colors cursor-pointer z-10 border border-gray-300 rounded-full px-4 py-2 text-sm font-semibold">
+            Exit
           </Link>
         </div>
       </header>

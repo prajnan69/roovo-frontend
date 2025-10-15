@@ -8,12 +8,14 @@ interface ListingSectionProps {
   title: string;
   listings: Listing[];
   loading: boolean;
+  onImageLoad: () => void;
 }
 
-const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loading }) => {
+const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loading, onImageLoad }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   // This function checks if scrolling is possible in either direction
   const checkScrollability = () => {
@@ -31,6 +33,15 @@ const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loadin
   };
 
   // Run the scroll check when the component mounts or when listings data/loading state changes
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -64,7 +75,7 @@ const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loadin
     // The 'group' class allows child elements to change styles based on the parent's state (e.g., on hover)
     <section className="relative group">
       {/* --- Section Header --- */}
-      <div className="flex items-center justify-between mb-4">
+      <div className={`flex items-center justify-between mb-4 ${isMobile ? 'px-4' : ''}`}>
         <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h2>
       </div>
 
@@ -74,16 +85,16 @@ const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loadin
         <div
           ref={scrollContainerRef}
           onScroll={checkScrollability} // Re-check scrollability whenever the user manually scrolls
-          className="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide"
+          className={`flex ${isMobile ? 'space-x-4 px-4' : 'space-x-3'} overflow-x-auto pb-4 scrollbar-hide`}
         >
           {loading
-            ? Array.from({ length: 8 }).map((_, index) => <SkeletonCard key={`skel-${index}`} />)
-            : listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)
+            ? Array.from({ length: 8 }).map((_, index) => <SkeletonCard key={`skel-${index}`} isMobile={isMobile} />)
+            : listings.map((listing) => <ListingCard key={listing.id} listing={listing} onImageLoad={onImageLoad} isMobile={isMobile} />)
           }
         </div>
         
         {/* Left Scroll Button - appears on group hover and disappears when disabled */}
-        <button
+        {!isMobile && <button
           onClick={() => handleScroll('left')}
           disabled={!canScrollLeft}
           aria-label="Scroll left"
@@ -92,10 +103,10 @@ const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loadin
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-        </button>
+        </button>}
         
         {/* Right Scroll Button - appears on group hover and disappears when disabled */}
-        <button
+        {!isMobile && <button
           onClick={() => handleScroll('right')}
           disabled={!canScrollRight}
           aria-label="Scroll right"
@@ -104,7 +115,7 @@ const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loadin
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </button>}
       </div>
     </section>
   );

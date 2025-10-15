@@ -2,15 +2,28 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 interface BecomeAHostProps {
   isOpen: boolean;
   onClose: () => void;
+  isLoggedIn: boolean;
+  openLogin: (path: string) => void;
 }
 
-const BecomeAHost = ({ isOpen, onClose }: BecomeAHostProps) => {
+const BecomeAHost = ({ isOpen, onClose, isLoggedIn, openLogin }: BecomeAHostProps) => {
+  const router = useRouter();
+
+  const handleNavigation = (path: string) => {
+    if (isLoggedIn) {
+      router.push(path);
+      onClose();
+    } else {
+      openLogin(path);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -30,7 +43,7 @@ const BecomeAHost = ({ isOpen, onClose }: BecomeAHostProps) => {
               <h2 className="text-3xl font-bold text-slate-900">Join our hosting community</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link href="/import-listing" onClick={onClose}>
+              <div onClick={() => handleNavigation('/import-listing')}>
                 <motion.div
                   className="flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all duration-200 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 h-64"
                   whileHover={{ scale: 1.05 }}
@@ -40,8 +53,8 @@ const BecomeAHost = ({ isOpen, onClose }: BecomeAHostProps) => {
                   <span className="text-xl font-semibold text-slate-800">Already hosted</span>
                   <p className="text-slate-500 mt-2">Import your existing listing from another site.</p>
                 </motion.div>
-              </Link>
-              <Link href="/become-a-host" onClick={onClose}>
+              </div>
+              <div onClick={() => handleNavigation('/become-a-host')}>
                 <motion.div
                   className="flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all duration-200 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 h-64"
                   whileHover={{ scale: 1.05 }}
@@ -51,7 +64,7 @@ const BecomeAHost = ({ isOpen, onClose }: BecomeAHostProps) => {
                   <span className="text-xl font-semibold text-slate-800">New to hosting</span>
                   <p className="text-slate-500 mt-2">Create a new listing from scratch.</p>
                 </motion.div>
-              </Link>
+              </div>
             </div>
           </motion.div>
         </div>

@@ -1,0 +1,40 @@
+"use client";
+
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { ListingData } from "@/types";
+
+interface MapViewProps {
+  listing: ListingData;
+}
+
+const containerStyle = {
+  width: "100%",
+  height: "400px",
+  borderRadius: "12px",
+};
+
+export default function MapView({ listing }: MapViewProps) {
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+  });
+
+  const center = {
+    lat: listing.propertyDetails.coordinates.latitude,
+    lng: listing.propertyDetails.coordinates.longitude,
+  };
+
+  return (
+    <div className="rounded-2xl overflow-hidden shadow-md">
+      {isLoaded ? (
+        <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={14}>
+          <Marker position={center} />
+        </GoogleMap>
+      ) : (
+        <div className="flex items-center justify-center h-[400px] text-gray-500">
+          Loading map...
+        </div>
+      )}
+    </div>
+  );
+}

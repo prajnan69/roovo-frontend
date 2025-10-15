@@ -1,9 +1,13 @@
-import { LoaderOne } from "@/components/ui/loader";
+"use client";
 
-export default function Loading() {
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
+
+const Loading = () => {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-      <LoaderOne />
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <Spinner size={48} />
     </div>
   );
-}
+};
+
+export default Loading;

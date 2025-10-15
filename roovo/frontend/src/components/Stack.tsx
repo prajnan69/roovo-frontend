@@ -45,6 +45,7 @@ interface StackProps {
   sendToBackOnClick?: boolean;
   cardsData?: { id: number; img: string }[];
   animationConfig?: { stiffness: number; damping: number };
+  onImageLoad: () => void;
 }
 
 export default function Stack({
@@ -53,7 +54,8 @@ export default function Stack({
   cardDimensions = { width: 208, height: 208 },
   cardsData = [],
   animationConfig = { stiffness: 260, damping: 20 },
-  sendToBackOnClick = false
+  sendToBackOnClick = false,
+  onImageLoad
 }: StackProps) {
   const [cards, setCards] = useState(
     cardsData.length
@@ -122,7 +124,7 @@ export default function Stack({
                 height: cardDimensions.height
               }}
             >
-              <Image src={card.img} alt={`card-${card.id}`} width={cardDimensions.width} height={cardDimensions.height} className="w-full h-full object-cover pointer-events-none" />
+              <Image src={card.img} alt={`card-${card.id}`} width={cardDimensions.width} height={cardDimensions.height} className="w-full h-full object-cover pointer-events-none" onLoad={onImageLoad} />
             </motion.div>
           </CardRotate>
         );

@@ -18,6 +18,7 @@ import { ListingData } from "@/types";
 import CircularGallery from "../CircularGallery";
 import { FireworksBackground } from "../Fireworks";
 import Image from "next/image";
+import Map from "./Map";
 
 const fadeInUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -376,6 +377,16 @@ export default function ListingConfirmationRedesigned({
                 ))}
               </div>
             </motion.div>
+
+            {/* Map Section */}
+            {data.propertyDetails.coordinates && (
+              <motion.div {...fadeInUp(0.75)}>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Location</h2>
+                <div className="rounded-2xl overflow-hidden shadow-lg">
+                  <Map listing={data} />
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Sticky Confirmation Card */}

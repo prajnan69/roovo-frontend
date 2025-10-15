@@ -214,7 +214,7 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
         >
           <button
             onClick={onExpand}
-            className="w-full bg-white/80 backdrop-blur-xl border border-slate-200/70 rounded-full  flex items-center justify-between px-6 py-3 text-sm font-semibold text-slate-700 min-w-[280px]"
+            className="w-full border border-slate-200/70 rounded-full flex items-center justify-between px-6 py-3 text-sm font-semibold text-slate-700 min-w-[280px]"
           >
             <SlidingText />
             <span className="bg-red-500 text-white rounded-full p-1.5">
