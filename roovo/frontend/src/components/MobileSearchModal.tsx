@@ -60,11 +60,11 @@ const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
               <MobileWhere selectedCity={selectedCity} setSelectedCity={setSelectedCity} />
             </section>
             <section>
-              <h3 className="font-semibold mb-2 text-slate-800">When's your trip?</h3>
+              <h3 className="font-semibold mb-2 text-slate-800">When&apos;s your trip?</h3>
               <MobileWhen dates={dates} setDates={setDates} />
             </section>
             <section>
-              <h3 className="font-semibold mb-2 text-slate-800">Who's coming?</h3>
+              <h3 className="font-semibold mb-2 text-slate-800">Who&apos;s coming?</h3>
               <MobileWho 
                 adults={adults}
                 setAdults={setAdults}
