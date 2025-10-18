@@ -283,7 +283,7 @@ export default function ListingConfirmationRedesigned({
                     </h2>
 
                     <div className="flex items-center flex-wrap text-lg text-gray-600 gap-x-4 gap-y-2">
-                      {data.hostInfo?.details && data.hostInfo.details.includes("Superhost") && (
+                      {data.hostInfo?.details.includes("Superhost") && (
                         <span className="inline-flex items-center">
                           <Award className="w-5 h-5 text-yellow-500 mr-1" />
                           Superhost
@@ -348,33 +348,12 @@ export default function ListingConfirmationRedesigned({
 
             {/* Reviews */}
             <motion.div {...fadeInUp(0.7)}>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Reviews</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Rating on other app</h2>
               <div className="flex items-center gap-2 text-2xl font-bold text-gray-900 mb-6">
                 <Star className="w-7 h-7 text-yellow-500" />
                 <span>
-                  {data.ratingsAndReviews.overallRating} ·{" "}
-                  {data.ratingsAndReviews.totalReviews} reviews
+                  {data.ratingsAndReviews.overallRating}
                 </span>
-              </div>
-              <div className="grid grid-cols-2 gap-x-12 gap-y-8">
-                {data.ratingsAndReviews.categoryRatings.map((rating, index) => (
-                  <div key={`${rating.category}-${index}`}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-lg text-gray-700">
-                        {rating.category}
-                      </span>
-                      <span className="text-lg font-semibold text-gray-900">
-                        {rating.rating.toFixed(1)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1.5">
-                      <div
-                        className="bg-gray-800 h-1.5 rounded-full"
-                        style={{ width: `${(rating.rating / 5) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </motion.div>
 

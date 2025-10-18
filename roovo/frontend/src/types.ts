@@ -17,9 +17,9 @@ export interface ListingData {
   ratingsAndReviews: {
     overallRating: number;
     totalReviews: number;
-    categoryRatings: { // Corrected to array of objects
-      category: string;
-      rating: number;
+    categoryRatings: {
+      label: string;
+      localizedRating: string;
     }[];
     reviewTags: string[];
   };
@@ -27,7 +27,7 @@ export interface ListingData {
     name: string;
     details: string[];
     about: string;
-    photoUrl?: string; // Added photoUrl
+    photoUrl?: string;
   };
   propertyDescription: {
     summary: string;
