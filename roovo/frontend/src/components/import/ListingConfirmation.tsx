@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { ListingData } from "@/types";
 import CircularGallery from "../CircularGallery";
+import ImageGallery from "./ImageGallery";
+import { useWindowSize } from "@/hooks/useWindowSize";
 import { FireworksBackground } from "../Fireworks";
 import Image from "next/image";
 import Map from "./Map";
@@ -82,6 +84,8 @@ export default function ListingConfirmationRedesigned({
   const [imageIndex, setImageIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [showFireworks, setShowFireworks] = useState(true);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -113,9 +117,9 @@ export default function ListingConfirmationRedesigned({
       {showFireworks && (
         <FireworksBackground className="fixed inset-0 z-50 pointer-events-none" />
       )}
-      <motion.div className="mx-auto max-w-7xl py-12 px-4" {...fadeInUp(0)}>
+      <motion.div className="mx-auto max-w-7xl py-6 sm:py-12 px-4 sm:px-6 lg:px-8" {...fadeInUp(0)}>
         {/* Image Banner */}
-        <div className="relative h-[450px] mb-12">
+        <div className="relative h-[300px] sm:h-[450px] mb-8 sm:mb-12">
           <AnimatePresence mode="popLayout">
             <motion.div
               key={imageIndex}
@@ -145,7 +149,7 @@ export default function ListingConfirmationRedesigned({
                 >
                   <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {img.alt}
+                    {img.alt_text}
                   </div>
                 </motion.div>
               ))}
@@ -168,52 +172,59 @@ export default function ListingConfirmationRedesigned({
           )}
         </div>
 
-        {showGallery && (
-          <CircularGallery
-            items={images.map((img) => ({
-              image: img.url,
-              text: img.alt
-            }))}
-            font=" 34px 'roboto'"
-            textColor="#ffffff"
-            borderRadius={0.06}
-            bend={2.5}
-            onClose={() => setShowGallery(false)}
-          />
-        )}
+        {showGallery &&
+          (isMobile ? (
+            <ImageGallery
+              images={images}
+              initialIndex={0}
+              onClose={() => setShowGallery(false)}
+            />
+          ) : (
+            <CircularGallery
+              items={images.map((img) => ({
+                image: img.url,
+                text: img.alt_text,
+              }))}
+              font=" 34px 'roboto'"
+              textColor="#ffffff"
+              borderRadius={0.06}
+              bend={2.5}
+              onClose={() => setShowGallery(false)}
+            />
+          ))}
 
 
         {/* Hero Section */}
-        <motion.div {...fadeInUp(0.2)} className="mb-2">
-          <h1 className="text-5xl font-bold tracking-tight text-gray-900 font-montserrat">
+        <motion.div {...fadeInUp(0.2)} className="mb-6 md:mb-2">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 font-montserrat">
             {data.propertyDetails.title}
           </h1>
-          <p className="text-xl text-gray-600 mt-4 flex items-center">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 mt-2 sm:mt-4 flex items-start sm:items-center">
             <MapPin className="w-6 h-6 mr-2 text-gray-500" />
             {data.propertyDetails.location}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2 space-y-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 pb-24 lg:pb-0">
+          <div className="lg:col-span-2 space-y-8 sm:space-y-12">
             {/* Accommodation Info */}
             <motion.div
               {...fadeInUp(0.25)}
-              className="flex flex-wrap items-center gap-6 bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm"
+              className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-4 sm:gap-6 bg-gray-50 rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm"
             >
-              <div className="flex items-center gap-2 text-gray-700 text-lg">
-                <Users className="w-6 h-6 text-gray-500" />
-                {data.accommodation.guests} {data.accommodation.guests > 1 ? "guests" : "guest"}
+              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
+                <span>{data.accommodation.guests} {data.accommodation.guests > 1 ? "guests" : "guest"}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700 text-lg">
-                <Home className="w-6 h-6 text-gray-500" />
-                {data.accommodation.bedrooms} {data.accommodation.bedrooms > 1 ? "bedrooms" : "bedroom"}
+              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
+                <Home className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
+                <span>{data.accommodation.bedrooms} {data.accommodation.bedrooms > 1 ? "bedrooms" : "bedroom"}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700 text-lg">
+              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
                 <BedIcon />
-                {data.accommodation.beds} {data.accommodation.beds > 1 ? "beds" : "bed"}
+                <span>{data.accommodation.beds} {data.accommodation.beds > 1 ? "beds" : "bed"}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700 text-lg">
+              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
                 <Bath className="w-6 h-6 text-gray-500" />
                 {data.accommodation.bathrooms} {data.accommodation.bathrooms > 1 ? "baths" : "bath"}
               </div>
@@ -221,7 +232,7 @@ export default function ListingConfirmationRedesigned({
 
             {/* About this property */}
             <motion.div {...fadeInUp(0.35)}>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
                 About this property
               </h2>
               {isDescriptionExpanded ? (
@@ -233,14 +244,14 @@ export default function ListingConfirmationRedesigned({
                 />
               ) : (
                 <p
-                  className={`text-gray-700 text-lg leading-relaxed  line-clamp-5`}
+                  className={`text-gray-700 text-base sm:text-lg leading-relaxed  line-clamp-5`}
                 >
                   {propertyDescription}
                 </p>
               )}
               <button
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                className=" cursor-pointer mt-4 inline-flex items-center gap-2 text-indigo-600 font-semibold text-lg hover:text-indigo-800 transition-colors"
+                className=" cursor-pointer mt-4 inline-flex items-center gap-2 text-indigo-600 font-semibold text-base sm:text-lg hover:text-indigo-800 transition-colors"
               >
                 {isDescriptionExpanded ? "Save & Show less" : "Edit & Read more"}{" "}
                 <ChevronDown
@@ -257,10 +268,10 @@ export default function ListingConfirmationRedesigned({
               className="relative bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg border border-gray-100"
             >
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-50/40 to-transparent pointer-events-none" />
-              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+              <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
                 {/* Host Info */}
-                <div className="flex items-center gap-6">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg flex-shrink-0">
                     {data.hostInfo.photoUrl ? (
                       <Image
                         src={data.hostInfo.photoUrl}
@@ -278,11 +289,11 @@ export default function ListingConfirmationRedesigned({
                   </div>
 
                   <div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-1">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
                       Hosted by {data.hostInfo.name}
                     </h2>
 
-                    <div className="flex items-center flex-wrap text-lg text-gray-600 gap-x-4 gap-y-2">
+                    <div className="flex items-center flex-wrap text-base sm:text-lg text-gray-600 gap-x-4 gap-y-2">
                       {data.hostInfo?.details.includes("Superhost") && (
                         <span className="inline-flex items-center">
                           <Award className="w-5 h-5 text-yellow-500 mr-1" />
@@ -308,10 +319,10 @@ export default function ListingConfirmationRedesigned({
 
             {/* Amenities */}
             <motion.div {...fadeInUp(0.55)}>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
                 What this place offers
               </h2>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-lg text-gray-700">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-base sm:text-lg text-gray-700">
                 {amenitiesToShow.map((amenity) => (
                   <div
                     key={amenity}
@@ -348,8 +359,8 @@ export default function ListingConfirmationRedesigned({
 
             {/* Reviews */}
             <motion.div {...fadeInUp(0.7)}>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Rating on other app</h2>
-              <div className="flex items-center gap-2 text-2xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Rating on other app</h2>
+              <div className="flex items-center gap-2 text-xl sm:text-2xl font-bold text-gray-900 mb-6">
                 <Star className="w-7 h-7 text-yellow-500" />
                 <span>
                   {data.ratingsAndReviews.overallRating}
@@ -360,18 +371,18 @@ export default function ListingConfirmationRedesigned({
             {/* Map Section */}
             {data.propertyDetails.coordinates && (
               <motion.div {...fadeInUp(0.75)}>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Location</h2>
-                <div className="rounded-2xl overflow-hidden shadow-lg">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Location</h2>
+                <div className="rounded-2xl overflow-hidden shadow-lg h-64 sm:h-96">
                   <Map listing={data} />
                 </div>
               </motion.div>
             )}
           </div>
 
-          {/* Sticky Confirmation Card */}
-          <div className="lg:col-span-1">
+          {/* Sticky Confirmation Card - Desktop */}
+          <div className="hidden lg:block lg:col-span-1">
             <motion.div
-              className="sticky top-24 bg-white p-8 rounded-2xl shadow-2xl mt-28"
+              className="sticky top-24 bg-white p-8 rounded-2xl shadow-2xl"
               {...fadeInUp(0.8)}
             >
               <h3 className="text-2xl font-bold text-gray-900">Ready to list?</h3>
@@ -384,14 +395,18 @@ export default function ListingConfirmationRedesigned({
               >
                 Confirm pricing & List <ArrowRight className="w-5 h-5" />
               </button>
-              {/* <button
-                onClick={onCancel}
-                className="  w-full text-center text-gray-600 mt-4 hover:text-gray-900 transition"
-              >
-                Edit details
-              </button> */}
             </motion.div>
           </div>
+        </div>
+
+        {/* Mobile Confirmation Bar */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-40">
+          <button
+            onClick={onConfirm}
+            className="cursor-pointer w-full inline-flex items-center justify-center gap-2 bg-indigo-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-indigo-600 active:scale-95 transition text-base font-bold"
+          >
+            Confirm & List <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </motion.div>
     </div>

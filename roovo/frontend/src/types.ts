@@ -50,7 +50,7 @@ export interface ListingData {
   additionalInfo: {
     imageUrls: {
       url: string;
-      alt: string;
+      alt_text: string;
     }[];
     nearbyCities: string[]; // Corrected to string[]
     breadcrumbs: string[];
