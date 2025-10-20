@@ -1,8 +1,10 @@
 "use client";
 
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import ListingConfirmation from "@/components/import/ListingConfirmation";
+import ConfirmPriceAndList from "@/components/import/ConfirmPriceAndList";
 import { ListingData } from "@/types";
 import { MultiStepLoader as Loader } from "@/components/ui/multi-step-loader";
 import Image from "next/image";
@@ -22,6 +24,7 @@ const ImportListingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [scrapedData, setScrapedData] = useState<ListingData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<"confirmation" | "pricing">("confirmation");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,15 +62,15 @@ const ImportListingPage = () => {
 
       // The backend returns the full data structure, so we map it to our ListingData type.
       const transformedData: ListingData = {
-        propertyDetails: responseData["Property Details"],
-        accommodation: responseData["Accommodation"],
-        ratingsAndReviews: responseData["Ratings and Reviews"],
-        hostInfo: responseData["Host Information"],
-        propertyDescription: responseData["Property Description"],
-        amenities: responseData["Amenities"],
-        houseRules: responseData["House Rules"],
-        safetyInfo: responseData["Safety Information"],
-        additionalInfo: responseData["Additional Information"],
+        propertyDetails: responseData.propertyDetails,
+        accommodation: responseData.accommodation,
+        ratingsAndReviews: responseData.ratingsAndReviews,
+        hostInfo: responseData.hostInformation,
+        propertyDescription: responseData.propertyDescription,
+        amenities: responseData.amenities,
+        houseRules: responseData.houseRules,
+        safetyInfo: responseData.safetyInformation,
+        additionalInfo: responseData.additionalInformation,
       };
 
       console.log("🎯 Final transformed data:", transformedData);
@@ -83,10 +86,20 @@ const ImportListingPage = () => {
   };
 
   const handleConfirm = () => {
-    console.log("✅ Listing confirmed:", scrapedData);
+    setStep("pricing");
+  };
+
+  const handlePriceConfirm = (price: number, weekendPercentage: number, model: "subscription" | "casual") => {
+    console.log("✅ Listing confirmed:", {
+      ...scrapedData,
+      price,
+      weekendPercentage,
+      model,
+    });
     alert("Listing confirmed! (Check console for data)");
     setScrapedData(null);
     setUrl("");
+    setStep("confirmation");
   };
 
   const handleCancel = () => {
@@ -99,13 +112,20 @@ const ImportListingPage = () => {
     <div className="min-h-screen bg-white">
       <Loader loadingStates={loadingStates} loading={isLoading} duration={2000} />
       <main className="px-8">
-        {scrapedData ? (
+        {scrapedData && step === "confirmation" && (
           <ListingConfirmation
             data={scrapedData}
             onConfirm={handleConfirm}
             onCancel={handleCancel}
           />
-        ) : (
+        )}
+        {scrapedData && step === "pricing" && (
+          <ConfirmPriceAndList
+            hostName={scrapedData.hostInfo.name}
+            onConfirm={handlePriceConfirm}
+          />
+        )}
+        {!scrapedData && (
           <div className="flex items-center justify-center min-h-screen">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

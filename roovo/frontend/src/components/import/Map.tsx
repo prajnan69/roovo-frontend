@@ -19,9 +19,12 @@ export default function MapView({ listing }: MapViewProps) {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
   });
 
+  const lat = parseFloat(listing.propertyDetails.coordinates.latitude as any);
+  const lng = parseFloat(listing.propertyDetails.coordinates.longitude as any);
+
   const center = {
-    lat: listing.propertyDetails.coordinates.latitude,
-    lng: listing.propertyDetails.coordinates.longitude,
+    lat: !isNaN(lat) ? lat : 0,
+    lng: !isNaN(lng) ? lng : 0,
   };
 
   return (

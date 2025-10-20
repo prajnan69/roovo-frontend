@@ -277,7 +277,8 @@ export default function ListingConfirmationRedesigned({
                         src={data.hostInfo.photoUrl}
                         alt={data.hostInfo.name}
                         className="w-full h-full object-cover"
-                        layout="fill"
+                        fill
+                        sizes="(max-width: 640px) 80px, 96px"
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -290,7 +291,7 @@ export default function ListingConfirmationRedesigned({
 
                   <div>
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
-                      Hosted by {data.hostInfo.name}
+                      Hey {data.hostInfo.name} 👋 <br /> welcome to roovo
                     </h2>
 
                     <div className="flex items-center flex-wrap text-base sm:text-lg text-gray-600 gap-x-4 gap-y-2">
@@ -405,7 +406,7 @@ export default function ListingConfirmationRedesigned({
             onClick={onConfirm}
             className="cursor-pointer w-full inline-flex items-center justify-center gap-2 bg-indigo-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-indigo-600 active:scale-95 transition text-base font-bold"
           >
-            Confirm & List <ArrowRight className="w-5 h-5" />
+            Confirm price & List <ArrowRight className="w-5 h-5" />
           </button>
         </div>
       </motion.div>
