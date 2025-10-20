@@ -65,7 +65,7 @@ const ImportListingPage = () => {
         propertyDetails: responseData.propertyDetails,
         accommodation: responseData.accommodation,
         ratingsAndReviews: responseData.ratingsAndReviews,
-        hostInfo: responseData.hostInformation,
+        hostInfo: responseData.hostInformation || responseData.hostInfo,
         propertyDescription: responseData.propertyDescription,
         amenities: responseData.amenities,
         houseRules: responseData.houseRules,
