@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import ProgressBar from '@/components/onboarding/ProgressBar';
 import Step1_Intro from '@/components/onboarding/Step1_Intro';
 import Step2_PropertyType from '@/components/onboarding/Step2_PropertyType';

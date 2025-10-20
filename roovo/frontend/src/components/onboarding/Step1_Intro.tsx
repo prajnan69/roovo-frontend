@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
 
 interface Step1IntroProps {
   onNext: () => void;
