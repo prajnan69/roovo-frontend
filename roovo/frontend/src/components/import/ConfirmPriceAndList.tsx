@@ -192,12 +192,20 @@ export default function ConfirmPriceAndList({
                     >
                         <BadgeCheck size={20} />
                         'Best Value' Badge Unlocked!
-                        {showBadgeInfo && <BestValueBadgeInfo airbnbBasePrice={scrapedData.bookingAndAvailability.price.pricePerNight} />}
                     </motion.div>
                 )}
              </AnimatePresence>
           </div>
         </motion.div>
+
+        {showBadgeInfo && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+              <BestValueBadgeInfo airbnbBasePrice={scrapedData.bookingAndAvailability.price.pricePerNight} />
+              <button onClick={() => setShowBadgeInfo(false)} className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg">Close</button>
+            </div>
+          </div>
+        )}
 
         {/* --- EARNINGS COMPARISON --- */}
         <motion.div 

@@ -63,11 +63,24 @@ const ImportListingPage = () => {
           throw new Error("Failed to import listing. We will List it and notify you to confirm the pricing.");
         }
 
-        const responseData = await response.json();
-        console.log("🧠 Gemini API Response:", JSON.stringify(responseData, null, 2));
+      const responseData = await response.json();
+      console.log("🧠 Gemini API Response:", JSON.stringify(responseData, null, 2));
 
-        setScrapedData(responseData.data);
-        setImportedListingId(responseData.data.id);
+      const { data } = responseData;
+      const transformedData: ListingData = {
+        id: data.id,
+        title: data.title,
+        propertyDetails: data.propertyDetails,
+        bookingAndAvailability: data.bookingAndAvailability,
+        amenities: data.amenities,
+        reviewsAndRatings: data.reviewsAndRatings,
+        hostInformation: data.hostInformation,
+        locationAndNeighborhood: data.locationAndNeighborhood,
+        media: data.media,
+      };
+
+      setScrapedData(transformedData);
+      setImportedListingId(data.id);
       }
     } catch (err) {
       console.error("🔥 Error during import:", err);
