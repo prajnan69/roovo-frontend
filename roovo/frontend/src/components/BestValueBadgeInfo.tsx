@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { BadgeCheck, BarChart3, X, ArrowRight, TrendingUp, Star, Eye } from "lucide-react";
+import { BadgeCheck, X, ArrowRight, TrendingUp, Star, Eye } from "lucide-react";
 
 interface BestValueBadgeInfoProps {
   onClose: () => void;
@@ -58,11 +58,11 @@ export default function BestValueBadgeInfo({
             <div className="flex justify-center items-center gap-4 mb-4">
               <BadgeCheck className="w-12 h-12 text-green-500" strokeWidth={2.5} />
               <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
-                The 'Best Value' Badge
+                The &apos;Best Value&apos; Badge
               </h1>
             </div>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              It's more than an icon. It's your key to higher rankings, more bookings, and greater profits on Roovo.
+              It&apos;s more than an icon. It&apos;s your key to higher rankings, more bookings, and greater profits on Roovo.
             </p>
           </motion.div>
 
@@ -73,7 +73,7 @@ export default function BestValueBadgeInfo({
                 <TrendingUp className="w-8 h-8 text-indigo-600" />
               </div>
               <h3 className="text-xl font-bold">Higher Search Ranking</h3>
-              <p className="text-gray-600">Our algorithm rewards fairness. 'Best Value' listings get a significant, automatic boost in search results.</p>
+              <p className="text-gray-600">Our algorithm rewards fairness. &apos;Best Value&apos; listings get a significant, automatic boost in search results.</p>
             </motion.div>
             <motion.div variants={itemVariants} custom={2} className="space-y-2">
               <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
@@ -87,13 +87,13 @@ export default function BestValueBadgeInfo({
                 <Star className="w-8 h-8 text-indigo-600" />
               </div>
               <h3 className="text-xl font-bold">Build Guest Trust</h3>
-              <p className="text-gray-600">The badge tells guests they've found something special. It builds trust before they even click, leading to higher conversion rates.</p>
+              <p className="text-gray-600">The badge tells guests they&apos;ve found something special. It builds trust before they even click, leading to higher conversion rates.</p>
             </motion.div>
           </div>
 
           {/* --- 3. THE "HOW-TO" GUIDE --- */}
           <motion.div variants={itemVariants} custom={4} className="mb-12">
-            <h2 className="text-2xl font-bold text-center mb-6">How to Get the Badge: It's Simple.</h2>
+            <h2 className="text-2xl font-bold text-center mb-6">How to Get the Badge: It&apos;s Simple.</h2>
             <div className="flex flex-col md:flex-row justify-center items-stretch gap-4 text-center">
               <div className="flex-1 bg-gray-50 p-6 rounded-xl border">
                 <p className="text-5xl font-extrabold text-indigo-600 mb-2">1</p>
@@ -118,7 +118,7 @@ export default function BestValueBadgeInfo({
 
           {/* --- 4. THE FINANCIAL PROOF --- */}
           <motion.div variants={itemVariants} custom={5} className="bg-indigo-50 p-8 rounded-2xl border border-indigo-200 mb-10">
-            <h2 className="text-2xl font-bold text-center mb-6 text-indigo-900">Lower Price, Higher Profit. Here's the Math.</h2>
+            <h2 className="text-2xl font-bold text-center mb-6 text-indigo-900">Lower Price, Higher Profit. Here&apos;s the Math.</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="text-center p-6 bg-white rounded-xl shadow-sm">
                     <h4 className="text-lg font-semibold text-gray-700">On Airbnb</h4>

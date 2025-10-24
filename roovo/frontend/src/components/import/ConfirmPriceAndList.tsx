@@ -4,11 +4,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   ArrowRight,
-  Coins,
-  Sparkles,
   Building2,
-  Info,
-  BarChart3,
   Crown,
   Wallet,
   BadgeCheck,
@@ -40,7 +36,7 @@ const BADGE_UNLOCK_THRESHOLD_PERCENT = 5;
 // --- COMPONENT ---
 export default function ConfirmPriceAndList({
   hostName,
-  importedListingId,
+  // importedListingId,
   scrapedData,
   onConfirm,
 }: ConfirmPriceAndListProps) {
@@ -91,9 +87,9 @@ export default function ConfirmPriceAndList({
     airbnbHostGets,
     roovoCasualHostGets,
     roovoSubHostGets,
-    airbnbGuestPays,
+    // airbnbGuestPays,
     roovoCasualGuestPays,
-    roovoSubGuestPays,
+    // roovoSubGuestPays,
     isBadgeUnlocked,
     airbnbLost,
     roovoCasualEarns,
@@ -131,10 +127,10 @@ export default function ConfirmPriceAndList({
           className="text-center mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-            Welcome, {hostName}! Let's Price Your Listing.
+            Welcome, {hostName}! Let&apos;s Price Your Listing.
           </h1>
           <p className="mt-3 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            We've imported your listing. Now, let's unlock your true earning potential on Roovo.
+            We&apos;ve imported your listing. Now, let&apos;s unlock your true earning potential on Roovo.
           </p>
         </motion.div>
 
@@ -151,7 +147,7 @@ export default function ConfirmPriceAndList({
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">The Roovo Advantage Slider</h2>
           </div>
           <p className="text-gray-600 mb-6 max-w-3xl">
-            Your current Airbnb price is <span className="font-bold text-gray-800">₹{scrapedData.bookingAndAvailability.price.pricePerNight.toFixed(2)}</span>. Because Roovo's fees are lower, you can offer a better price to guests and <span className="font-bold text-green-600">still earn more</span>. Use the slider to see for yourself.
+            Your current Airbnb price is <span className="font-bold text-gray-800">₹{scrapedData.bookingAndAvailability.price.pricePerNight.toFixed(2)}</span>. Because Roovo&apos;s fees are lower, you can offer a better price to guests and <span className="font-bold text-green-600">still earn more</span>. Use the slider to see for yourself.
           </p>
 
           <div className="flex items-center gap-6 mb-6">
@@ -191,7 +187,7 @@ export default function ConfirmPriceAndList({
                         onClick={() => setShowBadgeInfo(!showBadgeInfo)}
                     >
                         <BadgeCheck size={20} />
-                        'Best Value' Badge Unlocked!
+                        &apos;Best Value&apos; Badge Unlocked!
                     </motion.div>
                 )}
              </AnimatePresence>
@@ -201,7 +197,7 @@ export default function ConfirmPriceAndList({
         {showBadgeInfo && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg">
-              <BestValueBadgeInfo airbnbBasePrice={scrapedData.bookingAndAvailability.price.pricePerNight} />
+              <BestValueBadgeInfo onClose={() => setShowBadgeInfo(false)} airbnbBasePrice={scrapedData.bookingAndAvailability.price.pricePerNight} />
               <button onClick={() => setShowBadgeInfo(false)} className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg">Close</button>
             </div>
           </div>
@@ -266,14 +262,14 @@ export default function ConfirmPriceAndList({
                     <motion.div key={model} variants={popIn} initial="hidden" animate="visible" exit="exit">
                         {model === 'casual' ? (
                             <div>
-                                <h3 className="text-2xl font-bold text-indigo-700">You've selected Casual Host</h3>
+                                <h3 className="text-2xl font-bold text-indigo-700">You&apos;ve selected Casual Host</h3>
                                 <p className="mt-2 text-gray-600">
-                                    Guests will see a price of <span className="font-semibold">₹{roovoCasualGuestPays.toFixed(2)}</span>. You pay nothing upfront and we handle the GST for you. It's the simplest way to get started.
+                                    Guests will see a price of <span className="font-semibold">₹{roovoCasualGuestPays.toFixed(2)}</span>. You pay nothing upfront and we handle the GST for you. It&apos;s the simplest way to get started.
                                 </p>
                             </div>
                         ) : (
                             <div>
-                                <h3 className="text-2xl font-bold text-indigo-700">You've selected Subscription Host</h3>
+                                <h3 className="text-2xl font-bold text-indigo-700">You&apos;ve selected Subscription Host</h3>
                                 <p className="mt-2 text-gray-600">
                                     Guests will see your price of <span className="font-semibold">₹{roovoPrice.toFixed(2)}</span>. You pay a fixed <span className="font-semibold">₹{ROOVO_SUBSCRIPTION_FEE_MONTHLY}/month</span> to keep 100% of your earnings. This is the most profitable choice for active hosts.
                                 </p>

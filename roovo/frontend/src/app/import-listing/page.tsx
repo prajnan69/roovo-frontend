@@ -8,7 +8,6 @@ import { ListingData } from "@/types";
 import { MultiStepLoader as Loader } from "@/components/ui/multi-step-loader";
 import Image from "next/image";
 import { API_BASE_URL } from "@/services/api";
-import mockData from "../../../response.json";
 
 console.log("💡 ImportListingPage component loaded");
 
@@ -43,45 +42,39 @@ const ImportListingPage = () => {
     console.log("🟢 Starting import for URL:", url);
 
     try {
-      if (url.toLowerCase() === "mock") {
-        console.log(" MOCK DATA LOADED");
-        setScrapedData(mockData as ListingData);
-        setImportedListingId(mockData.id);
-      } else {
-        console.log("📤 Sending URL to backend:", `${API_BASE_URL}/api/scrape`);
-        const response = await fetch(`${API_BASE_URL}/api/scrape`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url }),
-        });
+      console.log("📤 Sending URL to backend:", `${API_BASE_URL}/api/scrape`);
+      const response = await fetch(`${API_BASE_URL}/api/scrape`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
 
-        console.log("📡 Backend response:", response.status, response.statusText);
+      console.log("📡 Backend response:", response.status, response.statusText);
 
-        if (!response.ok) {
-          const errText = await response.text();
-          console.error("❌ Backend error response:", errText);
-          throw new Error("Failed to import listing. We will List it and notify you to confirm the pricing.");
-        }
-
-      const responseData = await response.json();
-      console.log("🧠 Gemini API Response:", JSON.stringify(responseData, null, 2));
-
-      const { data } = responseData;
-      const transformedData: ListingData = {
-        id: data.id,
-        title: data.title,
-        propertyDetails: data.propertyDetails,
-        bookingAndAvailability: data.bookingAndAvailability,
-        amenities: data.amenities,
-        reviewsAndRatings: data.reviewsAndRatings,
-        hostInformation: data.hostInformation,
-        locationAndNeighborhood: data.locationAndNeighborhood,
-        media: data.media,
-      };
-
-      setScrapedData(transformedData);
-      setImportedListingId(data.id);
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("❌ Backend error response:", errText);
+        throw new Error("Failed to import listing. We will List it and notify you to confirm the pricing.");
       }
+
+    const responseData = await response.json();
+    console.log("🧠 Gemini API Response:", JSON.stringify(responseData, null, 2));
+
+    const { data } = responseData;
+    const transformedData: ListingData = {
+      id: data.id,
+      title: data.title,
+      propertyDetails: data.propertyDetails,
+      bookingAndAvailability: data.bookingAndAvailability,
+      amenities: data.amenities,
+      reviewsAndRatings: data.reviewsAndRatings,
+      hostInformation: data.hostInformation,
+      locationAndNeighborhood: data.locationAndNeighborhood,
+      media: data.media,
+    };
+
+    setScrapedData(transformedData);
+    setImportedListingId(data.id);
     } catch (err) {
       console.error("🔥 Error during import:", err);
       if (err instanceof Error) setError(err.message);
@@ -96,11 +89,10 @@ const ImportListingPage = () => {
     setStep("pricing");
   };
 
-  const handlePriceConfirm = (price: number, weekendPercentage: number, model: "subscription" | "casual") => {
+  const handlePriceConfirm = (price: number, model: "subscription" | "casual") => {
     console.log("✅ Listing confirmed:", {
       ...scrapedData,
       price,
-      weekendPercentage,
       model,
     });
     alert("Listing confirmed! (Check console for data)");

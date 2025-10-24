@@ -12,7 +12,7 @@ export interface ListingData {
       room: string;
       beds: string;
     }[];
-    totalBathrooms: number;
+    totalbathrooms: number;
   };
   bookingAndAvailability: {
     price: {
@@ -56,7 +56,7 @@ export interface ListingData {
       location: number;
       value: number;
     };
-    individualReviews: any[];
+    individualReviews: IndividualReview[];
   };
   hostInformation: {
     name: string;
@@ -82,4 +82,10 @@ export interface ListingData {
     primaryImageUrl: string;
     allImageUrls: string[];
   };
+}
+
+export interface IndividualReview {
+  reviewerName: string;
+  reviewDate: string;
+  reviewText: string;
 }

@@ -13,7 +13,6 @@ import {
   Bed,
   Users,
   Home,
-  Bath,
   Sparkles,
   Check,
   Calendar,
@@ -27,7 +26,7 @@ import ImageGallery from "./ImageGallery";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { FireworksBackground } from "../Fireworks";
 import Image from "next/image";
-import Map from "./Map";
+// import Map from "./Map";
 
 const fadeInUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -93,7 +92,7 @@ export default function ListingConfirmationRedesigned({
     if (data.media && imageIndex + 5 < data.media.allImageUrls.length) {
       const nextImages = data.media.allImageUrls.slice(imageIndex + 5, imageIndex + 10);
       nextImages.forEach((src) => {
-        const img = new (window as any).Image();
+        const img = new window.Image();
         img.src = src;
       });
     }

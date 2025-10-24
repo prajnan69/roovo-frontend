@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchListingById } from '@/services/api';
 import { Listing } from '@/components/HomeFeed';
-import ImageGallery from '@/components/import/ImageGallery';
 
 const ListingDetailsPage = () => {
   const params = useParams();
