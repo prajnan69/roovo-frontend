@@ -13,4 +13,24 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3002';
 
+export const fetchListings = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/listings`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch listings');
+  }
+  return response.json();
+};
+
+export const fetchListingById = async (id: string) => {
+  const response = await fetch(`${API_BASE_URL}/api/listings/${id}`);
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`Failed to fetch listing ${id}: ${response.status} ${response.statusText}`, errorText);
+    throw new Error('Failed to fetch listing');
+  }
+  const data = await response.json();
+  console.log(`Successfully fetched listing ${id}:`, data);
+  return data;
+};
+
 export default supabase;

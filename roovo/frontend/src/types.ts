@@ -1,58 +1,85 @@
 export interface ListingData {
+  id: string;
+  title: string;
   propertyDetails: {
-    title: string;
     propertyType: string;
-    location: string;
-    coordinates: {
-      latitude: number;
-      longitude: number;
+    description: {
+      theSpace: string;
+      guestAccess: string | null;
+      otherThingsToNote: string | null;
     };
-  };
-  accommodation: {
-    guests: number;
-    bedrooms: number;
-    beds: number;
-    bathrooms: number;
-  };
-  ratingsAndReviews: {
-    overallRating: number;
-    totalReviews: number;
-    categoryRatings: {
-      label: string;
-      localizedRating: string;
+    sleepingArrangements: {
+      room: string;
+      beds: string;
     }[];
-    reviewTags: string[];
+    totalBathrooms: number;
   };
-  hostInfo: {
-    name: string;
-    details: string[];
-    about: string;
-    photoUrl?: string;
-  };
-  propertyDescription: {
-    summary: string;
-    space: string;
-    guestAccess: string;
+  bookingAndAvailability: {
+    price: {
+      pricePerNight: number;
+      priceBreakdown: {
+        basePrice: string;
+        total: string;
+      };
+      priceDisclaimer: string;
+    };
+    availability: {
+      selectedDates: {
+        checkIn: string;
+        checkOut: string;
+        nights: number;
+      };
+    };
+    cancellationPolicy: string;
+    houseRules: {
+      checkIn: string;
+      checkOut: string;
+      maxGuests: number;
+      petsAllowed: boolean;
+      smokingAllowed: boolean;
+      commercialPhotographyAllowed: boolean;
+      additionalRules: string[];
+    };
   };
   amenities: {
     included: string[];
     notIncluded: string[];
   };
-  houseRules: {
-    checkIn: string;
-    checkOut: string;
-    otherRules: string[];
+  reviewsAndRatings: {
+    overallRating: number;
+    totalReviews: number;
+    detailedRatings: {
+      cleanliness: number;
+      accuracy: number;
+      checkIn: number;
+      communication: number;
+      location: number;
+      value: number;
+    };
+    individualReviews: any[];
   };
-  safetyInfo: {
-    security: string; // Corrected to string
-    alarms: string[];
+  hostInformation: {
+    name: string;
+    profilePictureUrl: string;
+    isSuperhost: boolean;
+    hostingSince: string;
+    stats: {
+      reviews: number;
+      averageRating: number;
+      responseRate: number | null;
+      responseTime: number | null;
+    };
+    bio: string[];
   };
-  additionalInfo: {
-    imageUrls: {
-      url: string;
-      alt_text: string;
-    }[];
-    nearbyCities: string[]; // Corrected to string[]
-    breadcrumbs: string[];
+  locationAndNeighborhood: {
+    address: string;
+    latitude: number;
+    longitude: number;
+    neighborhoodDescription: string;
+    gettingAround: string;
+  };
+  media: {
+    primaryImageUrl: string;
+    allImageUrls: string[];
   };
 }

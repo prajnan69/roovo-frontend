@@ -21,6 +21,15 @@ export interface Listing {
   images: string[];
   location: ApiLocation;
   rating: number;
+  property_description: {
+    summary: string;
+  };
+  additional_information: {
+    imageUrls: {
+      url: string;
+      alt_text: string;
+    }[];
+  };
 }
 
 // --- Main HomeFeed Component ---

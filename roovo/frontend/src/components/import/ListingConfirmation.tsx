@@ -4,15 +4,22 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
-  Users,
   CheckCircle2,
-  Home,
   ArrowRight,
   Star,
   ChevronDown,
-  Award,
   XCircle,
-  Bath
+  Award,
+  Bed,
+  Users,
+  Home,
+  Bath,
+  Sparkles,
+  Check,
+  Calendar,
+  MessageSquare,
+  Map as MapIcon,
+  Heart,
 } from "lucide-react";
 import { ListingData } from "@/types";
 import CircularGallery from "../CircularGallery";
@@ -51,23 +58,6 @@ const imageVariants = {
   exit: { opacity: 0, y: -20 },
 };
 
-const BedIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="w-6 h-6 text-gray-500"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M4 10V7a3 3 0 013-3h10a3 3 0 013 3v3M4 10h16M4 10v10m16-10v10M4 20h16"
-    />
-  </svg>
-);
-
 export default function ListingConfirmationRedesigned({
   data,
   onConfirm,
@@ -77,9 +67,8 @@ export default function ListingConfirmationRedesigned({
   onCancel: () => void;
 }) {
   const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const [showNotIncluded, setShowNotIncluded] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [propertyDescription, setPropertyDescription] = useState(data.propertyDescription?.summary || '');
-  const [hostAbout, setHostAbout] = useState(data.hostInfo?.about || '');
   const [currentAmenities, setCurrentAmenities] = useState(data.amenities?.included || []);
   const [imageIndex, setImageIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
@@ -95,13 +84,22 @@ export default function ListingConfirmationRedesigned({
   }, []);
 
   useEffect(() => {
-    setPropertyDescription(data.propertyDescription?.summary || '');
-    setHostAbout(data.hostInfo?.about || '');
     setCurrentAmenities(data.amenities?.included || []);
     setImageIndex(0);
   }, [data]);
 
-  const images = data.additionalInfo.imageUrls || [];
+  useEffect(() => {
+    // Preload next set of images
+    if (imageIndex + 5 < data.media.allImageUrls.length) {
+      const nextImages = data.media.allImageUrls.slice(imageIndex + 5, imageIndex + 10);
+      nextImages.forEach((src) => {
+        const img = new (window as any).Image();
+        img.src = src;
+      });
+    }
+  }, [imageIndex, data.media.allImageUrls]);
+
+  const images = data.media.allImageUrls || [];
   const amenitiesToShow = showAllAmenities
     ? currentAmenities
     : currentAmenities.slice(0, 8);
@@ -110,6 +108,15 @@ export default function ListingConfirmationRedesigned({
     setCurrentAmenities((prevAmenities) =>
       prevAmenities.filter((amenity) => amenity !== amenityToRemove)
     );
+  };
+
+  const ratingIcons = {
+    cleanliness: <Sparkles className="w-5 h-5 text-indigo-500" />,
+    accuracy: <Check className="w-5 h-5 text-indigo-500" />,
+    checkIn: <Calendar className="w-5 h-5 text-indigo-500" />,
+    communication: <MessageSquare className="w-5 h-5 text-indigo-500" />,
+    location: <MapIcon className="w-5 h-5 text-indigo-500" />,
+    value: <Heart className="w-5 h-5 text-indigo-500" />,
   };
 
   return (
@@ -141,16 +148,13 @@ export default function ListingConfirmationRedesigned({
                   className={`${
                     images.slice(imageIndex, imageIndex + 5).length >= 5 && i === 0 ? "col-span-2 row-span-2" : ""
                   } bg-cover bg-center relative cursor-pointer`}
-                  style={{ backgroundImage: `url(${img.url})` }}
+                  style={{ backgroundImage: `url(${img})` }}
                   variants={imageVariants}
                   whileHover={{ scale: 0.98 }}
                   transition={{ duration: 0.3 }}
                   onClick={() => setShowGallery(true)}
                 >
                   <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {img.alt_text}
-                  </div>
                 </motion.div>
               ))}
             </motion.div>
@@ -175,15 +179,15 @@ export default function ListingConfirmationRedesigned({
         {showGallery &&
           (isMobile ? (
             <ImageGallery
-              images={images}
+              images={images.map(url => ({ url, alt_text: 'Listing image' }))}
               initialIndex={0}
               onClose={() => setShowGallery(false)}
             />
           ) : (
             <CircularGallery
               items={images.map((img) => ({
-                image: img.url,
-                text: img.alt_text,
+                image: img,
+                text: "Listing image",
               }))}
               font=" 34px 'roboto'"
               textColor="#ffffff"
@@ -197,11 +201,11 @@ export default function ListingConfirmationRedesigned({
         {/* Hero Section */}
         <motion.div {...fadeInUp(0.2)} className="mb-6 md:mb-2">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 font-montserrat">
-            {data.propertyDetails.title}
+            {data.title}
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-gray-600 mt-2 sm:mt-4 flex items-start sm:items-center">
             <MapPin className="w-6 h-6 mr-2 text-gray-500" />
-            {data.propertyDetails.location}
+            {data.locationAndNeighborhood.address}
           </p>
         </motion.div>
 
@@ -213,21 +217,19 @@ export default function ListingConfirmationRedesigned({
               className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-4 sm:gap-6 bg-gray-50 rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm"
             >
               <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
-                <span>{data.accommodation.guests} {data.accommodation.guests > 1 ? "guests" : "guest"}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
                 <Home className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
-                <span>{data.accommodation.bedrooms} {data.accommodation.bedrooms > 1 ? "bedrooms" : "bedroom"}</span>
+                <span>{data.propertyDetails.propertyType}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
-                <BedIcon />
-                <span>{data.accommodation.beds} {data.accommodation.beds > 1 ? "beds" : "bed"}</span>
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
+                <span>{data.bookingAndAvailability.houseRules.maxGuests} guests</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
-                <Bath className="w-6 h-6 text-gray-500" />
-                {data.accommodation.bathrooms} {data.accommodation.bathrooms > 1 ? "baths" : "bath"}
-              </div>
+              {data.propertyDetails.sleepingArrangements.map((room, index) => (
+                <div key={index} className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
+                  <Bed className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
+                  <span>{room.beds}</span>
+                </div>
+              ))}
             </motion.div>
 
             {/* About this property */}
@@ -235,25 +237,14 @@ export default function ListingConfirmationRedesigned({
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
                 About this property
               </h2>
-              {isDescriptionExpanded ? (
-                <textarea
-                  value={propertyDescription}
-                  onChange={(e) => setPropertyDescription(e.target.value)}
-                  className="w-full text-gray-700 text-lg leading-relaxed border rounded-md p-2"
-                  rows={6}
-                />
-              ) : (
-                <p
-                  className={`text-gray-700 text-base sm:text-lg leading-relaxed  line-clamp-5`}
-                >
-                  {propertyDescription}
-                </p>
-              )}
+              <p className={`text-gray-700 text-base sm:text-lg leading-relaxed whitespace-pre-line ${!isDescriptionExpanded && "line-clamp-5"}`}>
+                {data.propertyDetails.description.theSpace}
+              </p>
               <button
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
                 className=" cursor-pointer mt-4 inline-flex items-center gap-2 text-indigo-600 font-semibold text-base sm:text-lg hover:text-indigo-800 transition-colors"
               >
-                {isDescriptionExpanded ? "Save & Show less" : "Edit & Read more"}{" "}
+                {isDescriptionExpanded ? "Show less" : "Read more"}{" "}
                 <ChevronDown
                   className={`w-5 h-5 transition-transform ${
                     isDescriptionExpanded ? "rotate-180" : ""
@@ -262,7 +253,7 @@ export default function ListingConfirmationRedesigned({
               </button>
             </motion.div>
 
-            {/* Host Section (Moved Below Description) */}
+            {/* Host Section */}
             <motion.div
               {...fadeInUp(0.45)}
               className="relative bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg border border-gray-100"
@@ -272,10 +263,10 @@ export default function ListingConfirmationRedesigned({
                 {/* Host Info */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg flex-shrink-0">
-                    {data.hostInfo.photoUrl ? (
+                    {data.hostInformation.profilePictureUrl ? (
                       <Image
-                        src={data.hostInfo.photoUrl}
-                        alt={data.hostInfo.name}
+                        src={data.hostInformation.profilePictureUrl}
+                        alt={data.hostInformation.name}
                         className="w-full h-full object-cover"
                         fill
                         sizes="(max-width: 640px) 80px, 96px"
@@ -283,7 +274,7 @@ export default function ListingConfirmationRedesigned({
                     ) : (
                       <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                         <span className="text-4xl font-bold text-gray-600">
-                          {data.hostInfo.name ? data.hostInfo.name.charAt(0).toUpperCase() : ''}
+                          {data.hostInformation.name ? data.hostInformation.name.charAt(0).toUpperCase() : ''}
                         </span>
                       </div>
                     )}
@@ -291,11 +282,11 @@ export default function ListingConfirmationRedesigned({
 
                   <div>
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
-                      Hey {data.hostInfo.name} 👋 <br /> welcome to roovo
+                      Hosted by {data.hostInformation.name}
                     </h2>
 
                     <div className="flex items-center flex-wrap text-base sm:text-lg text-gray-600 gap-x-4 gap-y-2">
-                      {data.hostInfo?.details.includes("Superhost") && (
+                      {data.hostInformation.isSuperhost && (
                         <span className="inline-flex items-center">
                           <Award className="w-5 h-5 text-yellow-500 mr-1" />
                           Superhost
@@ -303,16 +294,16 @@ export default function ListingConfirmationRedesigned({
                       )}
                       <span className="inline-flex items-center">
                         <Star className="w-5 h-5 text-yellow-500 mr-1" />
-                        {data.ratingsAndReviews.overallRating} (
-                        {data.ratingsAndReviews.totalReviews} reviews)
+                        {data.reviewsAndRatings.overallRating} ({data.reviewsAndRatings.totalReviews} reviews)
+                      </span>
+                      <span className="inline-flex items-center">
+                        <Calendar className="w-5 h-5 text-gray-500 mr-1" />
+                        {data.hostInformation.hostingSince}
                       </span>
                     </div>
-
-                    {data.hostInfo.about && (
-                      <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
-                        {hostAbout}
-                      </p>
-                    )}
+                    <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
+                      {data.hostInformation.bio.join(" ")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -356,28 +347,104 @@ export default function ListingConfirmationRedesigned({
                   />
                 </button>
               )}
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowNotIncluded(!showNotIncluded)}
+                  className="cursor-pointer inline-flex items-center gap-2 text-gray-600 font-semibold text-lg hover:text-gray-800 transition-colors"
+                >
+                  Show not included amenities
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform ${
+                      showNotIncluded ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {showNotIncluded && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-base sm:text-lg text-gray-700 mt-4">
+                    {data.amenities.notIncluded.map((amenity) => (
+                      <div
+                        key={amenity}
+                        className="flex items-center gap-4 group relative"
+                      >
+                        <XCircle className="w-6 h-6 text-red-500" />
+                        <span>{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </motion.div>
 
-            {/* Reviews */}
+            {/* Detailed Ratings */}
             <motion.div {...fadeInUp(0.7)}>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Rating on other app</h2>
-              <div className="flex items-center gap-2 text-xl sm:text-2xl font-bold text-gray-900 mb-6">
-                <Star className="w-7 h-7 text-yellow-500" />
-                <span>
-                  {data.ratingsAndReviews.overallRating}
-                </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Detailed Ratings</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {Object.entries(data.reviewsAndRatings.detailedRatings).map(([key, value]) => (
+                  <div key={key} className="flex items-center gap-2 bg-gray-50 p-4 rounded-lg">
+                    {ratingIcons[key as keyof typeof ratingIcons]}
+                    <span className="capitalize">{key}</span>
+                    <span className="font-bold">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Check-in/out Times */}
+            <motion.div {...fadeInUp(0.7)}>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Check-in & Check-out</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-gray-500" />
+                  <span>{data.bookingAndAvailability.houseRules.checkIn.split("m")[0]}m</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-gray-500" />
+                  <span>{data.bookingAndAvailability.houseRules.checkOut}</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* House Rules */}
+            <motion.div {...fadeInUp(0.7)}>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">House Rules</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className={`w-6 h-6 ${data.bookingAndAvailability.houseRules.petsAllowed ? 'text-green-500' : 'text-red-500'}`} />
+                  <span>{data.bookingAndAvailability.houseRules.petsAllowed ? "Pets allowed" : "No pets allowed"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className={`w-6 h-6 ${data.bookingAndAvailability.houseRules.smokingAllowed ? 'text-green-500' : 'text-red-500'}`} />
+                  <span>{data.bookingAndAvailability.houseRules.smokingAllowed ? "Smoking allowed" : "No smoking allowed"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className={`w-6 h-6 ${data.bookingAndAvailability.houseRules.commercialPhotographyAllowed ? 'text-green-500' : 'text-red-500'}`} />
+                  <span>{data.bookingAndAvailability.houseRules.commercialPhotographyAllowed ? "Commercial photography allowed" : "No commercial photography"}</span>
+                </div>
+                {data.bookingAndAvailability.houseRules.additionalRules.map((rule, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-6 h-6 text-green-500" />
+                    <span>{rule}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
 
             {/* Map Section */}
-            {data.propertyDetails.coordinates && (
+            {/* {data.locationAndNeighborhood.latitude && data.locationAndNeighborhood.longitude && (
               <motion.div {...fadeInUp(0.75)}>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Location</h2>
                 <div className="rounded-2xl overflow-hidden shadow-lg h-64 sm:h-96">
-                  <Map listing={data} />
+                  <Map listing={{
+                    propertyDetails: {
+                      coordinates: {
+                        latitude: data.locationAndNeighborhood.latitude,
+                        longitude: data.locationAndNeighborhood.longitude
+                      }
+                    }
+                  } as any} />
                 </div>
               </motion.div>
-            )}
+            )} */}
           </div>
 
           {/* Sticky Confirmation Card - Desktop */}
