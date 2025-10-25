@@ -8,6 +8,7 @@ import { ListingData } from "@/types";
 import { MultiStepLoader as Loader } from "@/components/ui/multi-step-loader";
 import Image from "next/image";
 import { API_BASE_URL } from "@/services/api";
+import mockData from "../../../response.json";
 
 console.log("💡 ImportListingPage component loaded");
 
@@ -42,6 +43,11 @@ const ImportListingPage = () => {
     console.log("🟢 Starting import for URL:", url);
 
     try {
+      if (url.toLowerCase() === "mock") {
+        console.log(" MOCK DATA LOADED");
+        setScrapedData(mockData as unknown as ListingData);
+        setImportedListingId(mockData.id);
+      } else {
       console.log("📤 Sending URL to backend:", `${API_BASE_URL}/api/scrape`);
       const response = await fetch(`${API_BASE_URL}/api/scrape`, {
         method: "POST",
@@ -75,6 +81,7 @@ const ImportListingPage = () => {
 
     setScrapedData(transformedData);
     setImportedListingId(data.id);
+      }
     } catch (err) {
       console.error("🔥 Error during import:", err);
       if (err instanceof Error) setError(err.message);
@@ -85,8 +92,26 @@ const ImportListingPage = () => {
     }
   };
 
-  const handleConfirm = () => {
-    setStep("pricing");
+  const handleConfirm = async () => {
+    if (!scrapedData) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/listings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(scrapedData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create listing.");
+      }
+
+      setStep("pricing");
+    } catch (err) {
+      console.error("Error creating listing:", err);
+      if (err instanceof Error) setError(err.message);
+      else setError("An unexpected error occurred while creating the listing.");
+    }
   };
 
   const handlePriceConfirm = (price: number, model: "subscription" | "casual") => {
@@ -110,7 +135,7 @@ const ImportListingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <Loader loadingStates={loadingStates} loading={isLoading} duration={2000} />
-      <main className="px-8">
+      <main>
         {scrapedData && step === "confirmation" && (
           <ListingConfirmation
             data={scrapedData}

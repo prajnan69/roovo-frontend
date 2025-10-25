@@ -21,7 +21,7 @@ const TopNavBar = () => {
   }
 
   return (
-    <header className="bg-black text-white p-4 border-b border-gray-800">
+    <header className="relative z-50 bg-black text-white p-4 border-b border-gray-800">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <h1 className="text-xl font-bold">Host Dashboard</h1>
         <nav className="flex space-x-6">

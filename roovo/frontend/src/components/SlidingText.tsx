@@ -3,23 +3,25 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const SlidingText = () => {
-  const [index, setIndex] = useState(0);
+const SlidingText = ({ animate = true }) => {
+  const [index, setIndex] = useState(animate ? 0 : 4);
   const words = ["📍 Where?", "📅 When?", "🫂 Who?"];
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setIndex(prevIndex => {
-        if (prevIndex >= words.length - 1) {
-          clearInterval(intervalId);
+    if (animate) {
+      const intervalId = setInterval(() => {
+        setIndex(prevIndex => {
+          if (prevIndex >= words.length - 1) {
+            clearInterval(intervalId);
+            return prevIndex + 1;
+          }
           return prevIndex + 1;
-        }
-        return prevIndex + 1;
-      });
-    }, 1500);
+        });
+      }, 1500);
 
-    return () => clearInterval(intervalId);
-  }, [words.length]);
+      return () => clearInterval(intervalId);
+    }
+  }, [animate, words.length]);
 
   return (
     <div className="flex items-center">

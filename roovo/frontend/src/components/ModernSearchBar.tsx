@@ -35,6 +35,7 @@ const itemVariants = {
 };
 
 interface ModernSearchBarProps {
+  showSlidingText?: boolean;
   isCollapsed: boolean;
   onExpand: () => void;
   selectedCity: { name: string; img: string; };
@@ -53,6 +54,7 @@ interface ModernSearchBarProps {
 
 // --- Main Component ---
 const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
+  showSlidingText = true,
   isCollapsed,
   onExpand,
   selectedCity,
@@ -216,7 +218,7 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             onClick={onExpand}
             className="w-full border border-slate-200/70 rounded-full flex items-center justify-between px-6 py-3 text-sm font-semibold text-slate-700 min-w-[280px]"
           >
-            <SlidingText />
+            <SlidingText animate={showSlidingText} />
             <span className="bg-red-500 text-white rounded-full p-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" /></svg>
             </span>

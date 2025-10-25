@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Listing } from './HomeFeed'; // Import the Listing type
 import Stack from './Stack';
-import { useRouter } from 'next/navigation';
 import { IconStarFilled } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,17 +14,18 @@ interface ListingCardProps {
 
 // --- Main ListingCard Component ---
 const ListingCard: React.FC<ListingCardProps> = ({ listing, onImageLoad, isMobile }) => {
-  const router = useRouter();
   const [isBadgeHovered, setIsBadgeHovered] = useState(false);
   const isGuestFavourite = listing.rating > 4.8;
   const displayLocation = listing.location?.city || 'Location unavailable';
-  const images = listing.images.map((src, index) => ({ id: index, img: src }));
+  const images = listing.images.slice(0, 5).map((src, index) => ({ id: index, img: src }));
 
   return (
     // Card container: Smaller width, flex-shrink-0 to prevent squishing
-    <div
+    <a
+      href={`/listing/${listing.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
       className={`cursor-pointer ${isMobile ? 'w-48' : 'w-48'} flex-shrink-0 isolate`}
-      onClick={() => router.push(`/listing/${listing.id}`)}
     >
       {/* --- Image Carousel --- */}
       <div className="relative rounded-2xl aspect-square group">
@@ -79,7 +79,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onImageLoad, isMobil
             </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 

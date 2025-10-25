@@ -22,7 +22,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(pathname.startsWith('/listing/'));
   const [selectedCity, setSelectedCity] = useState({ name: "Bengaluru", img: "/bengaluru.png" });
   const [dates, setDates] = useState<{ checkIn: Date | null; checkOut: Date | null }>({ checkIn: null, checkOut: null });
   const [adults, setAdults] = useState(0);
@@ -37,7 +38,6 @@ export default function RootLayout({
   const [redirectPath, setRedirectPath] = useState<string | undefined>(undefined);
   const headerRef = useRef<HTMLDivElement>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
-  const pathname = usePathname();
   const prevPathname = useRef(pathname);
   const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname === '/import-listing';
   const [isMobile, setIsMobile] = useState(false);
@@ -59,9 +59,19 @@ export default function RootLayout({
   }, []);
 
   useEffect(() => {
-    // Close the login modal when the route changes
-    if (prevPathname.current !== pathname && isLoginOpen) {
-      closeLogin();
+    if (prevPathname.current !== pathname) {
+      // Close the login modal on any route change
+      if (isLoginOpen) {
+        closeLogin();
+      }
+
+      // Collapse the search bar only when navigating to a listing page
+      if (pathname.startsWith('/listing/')) {
+        setIsScrolled(true);
+      } else if (pathname === '/') {
+        // Ensure the search bar is expanded when returning to the home page
+        setIsScrolled(false);
+      }
     }
     prevPathname.current = pathname;
   }, [pathname, isLoginOpen]);
@@ -98,7 +108,12 @@ export default function RootLayout({
   }, []);
 
   const handleExpand = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // On listing pages, expand by setting state. On homepage, scroll to top.
+    if (pathname.startsWith('/listing/')) {
+      setIsScrolled(false);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleLogout = () => {
@@ -147,18 +162,19 @@ export default function RootLayout({
         {!isLoginPage && !isMobile && (
         <header 
           ref={headerRef}
-          className="bg-white"
+          className="sticky top-0 z-50 bg-white"
         >
-          <div className="mx-auto px-6">
-            <div className="relative flex items-center justify-between h-20">
+          <div className="mx-auto">
+            <div className="relative flex items-center justify-between h-20 px-6">
               <div className="flex-1 flex justify-start">
-                <div className="text-2xl font-bold text-slate-900">Roovo</div>
+                <a href="/" className="text-2xl font-bold text-slate-900">Roovo</a>
               </div>
 
               <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md">
                 <AnimatePresence>
                   {isScrolled && (
                     <ModernSearchBar
+                      showSlidingText={!pathname.startsWith('/listing/')}
                       isCollapsed={isScrolled}
                       onExpand={handleExpand}
                     selectedCity={selectedCity}
@@ -228,8 +244,10 @@ export default function RootLayout({
         </header>
         )}
         
-        {children}
-        {!isLoginPage && isMobile && <BottomNavBar />}
+        <main >
+          {children}
+        </main>
+        {!isLoginPage && isMobile && !pathname.startsWith('/listing/') && <BottomNavBar />}
       </body>
     </html>
   );

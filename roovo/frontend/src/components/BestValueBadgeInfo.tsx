@@ -15,8 +15,8 @@ export default function BestValueBadgeInfo({
 }: BestValueBadgeInfoProps) {
 
   // --- CALCULATIONS FOR THE EXAMPLE ---
-  const recommendedDiscount = 0.10; // 10%
-  const airbnbCommission = 0.15; // 15%
+  const recommendedDiscount = 0.06; // 6%
+  const airbnbCommission = 0.17; // 17%
   
   const roovoPrice = airbnbBasePrice * (1 - recommendedDiscount);
   const airbnbHostNet = airbnbBasePrice * (1 - airbnbCommission);
@@ -40,19 +40,20 @@ export default function BestValueBadgeInfo({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <motion.div
         variants={modalVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden relative"
+        className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl relative flex flex-col"
+        style={{ maxHeight: '90vh' }}
       >
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10">
           <X size={24} />
         </button>
 
-        <div className="p-8 md:p-12">
+        <div className="p-8 md:p-12 overflow-y-auto scrollbar-hide">
           {/* --- 1. HOOK & CORE BENEFIT --- */}
           <motion.div variants={itemVariants} custom={0} className="text-center mb-10">
             <div className="flex justify-center items-center gap-4 mb-4">
@@ -123,7 +124,7 @@ export default function BestValueBadgeInfo({
                 <div className="text-center p-6 bg-white rounded-xl shadow-sm">
                     <h4 className="text-lg font-semibold text-gray-700">On Airbnb</h4>
                     <p className="text-gray-500">You list for: <span className="font-bold">₹{airbnbBasePrice.toFixed(2)}</span></p>
-                    <p className="text-gray-500">Platform fee (≈15%): <span className="font-bold text-red-500">-₹{(airbnbBasePrice * airbnbCommission).toFixed(2)}</span></p>
+                    <p className="text-gray-500">Platform fee (≈17%): <span className="font-bold text-red-500">-₹{(airbnbBasePrice * airbnbCommission).toFixed(2)}</span></p>
                     <hr className="my-3"/>
                     <p className="font-semibold">Your Net Profit:</p>
                     <p className="text-3xl font-bold text-gray-800">₹{airbnbHostNet.toFixed(2)}</p>
