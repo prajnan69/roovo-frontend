@@ -9,7 +9,6 @@ import HostInfoCard from '@/components/HostInfoCard';
 import SleepingArrangements from '@/components/SleepingArrangements';
 import HouseRules from '@/components/HouseRules';
 import DetailedRatings from '@/components/DetailedRatings';
-import ImageGallery from '@/components/import/ImageGallery';
 import CircularGallery from '@/components/CircularGallery';
 import { useWindowSize } from '@/hooks/useWindowSize';
 import { AnimatePresence, motion } from 'framer-motion';

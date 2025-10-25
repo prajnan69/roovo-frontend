@@ -1,20 +1,21 @@
 export interface ListingData {
   id: string;
   title: string;
-  propertyDetails: {
-    propertyType: string;
-    description: {
-      theSpace: string;
-      guestAccess: string | null;
-      otherThingsToNote: string | null;
-    };
+  property_type: string;
+  property_description: {
+    theSpace: string;
+    guestAccess: string | null;
+    otherThingsToNote: string | null;
+  };
+  accommodation: {
     sleepingArrangements: {
       room: string;
       beds: string;
     }[];
-    totalbathrooms: number;
+    totalBathrooms: number;
   };
-  bookingAndAvailability: {
+  price_per_night: number;
+  booking_and_availability: {
     price: {
       pricePerNight: number;
       priceBreakdown: {
@@ -31,21 +32,21 @@ export interface ListingData {
       };
     };
     cancellationPolicy: string;
-    houseRules: {
-      checkIn: string;
-      checkOut: string;
-      maxGuests: number;
-      petsAllowed: boolean;
-      smokingAllowed: boolean;
-      commercialPhotographyAllowed: boolean;
-      additionalRules: string[];
-    };
+  };
+  house_rules: {
+    checkIn: string;
+    checkOut: string;
+    maxGuests: number;
+    petsAllowed: boolean;
+    smokingAllowed: boolean;
+    commercialPhotographyAllowed: boolean;
+    additionalRules: string[];
   };
   amenities: {
     included: string[];
     notIncluded: string[];
   };
-  reviewsAndRatings: {
+  ratings_and_reviews: {
     overallRating: number;
     totalReviews: number;
     detailedRatings: {
@@ -58,7 +59,7 @@ export interface ListingData {
     };
     individualReviews: IndividualReview[];
   };
-  hostInformation: {
+  host_information: {
     name: string;
     profilePictureUrl: string;
     isSuperhost: boolean;
@@ -71,7 +72,7 @@ export interface ListingData {
     };
     bio: string[];
   };
-  locationAndNeighborhood: {
+  location_and_neighborhood: {
     address: string;
     latitude: number;
     longitude: number;

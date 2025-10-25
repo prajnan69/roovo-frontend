@@ -64,7 +64,7 @@ const BookingCard = ({ price }: { price: number }) => {
         </AnimatePresence>
         <div className="p-3 border-t relative">
           <label htmlFor="guests" className="text-xs font-semibold text-gray-600">GUESTS</label>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center" onClick={() => setGuests(guests + 1)}>
             <span className="text-sm">{guests} guest{guests > 1 && 's'}</span>
             <ChevronDown className="w-5 h-5 text-gray-600" />
           </div>
@@ -73,7 +73,7 @@ const BookingCard = ({ price }: { price: number }) => {
       <button className=" cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors">
         Reserve
       </button>
-      <p className="text-center text-sm text-gray-600 mt-2">You won't be charged yet</p>
+      <p className="text-center text-sm text-gray-600 mt-2">You won&apos;t be charged yet</p>
     </motion.div>
   );
 };

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Award, Star, Calendar } from "lucide-react";
 import Image from "next/image";
+import { ListingData } from "@/types";
 
 const fadeInUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -10,7 +11,7 @@ const fadeInUp = (delay = 0) => ({
   transition: { duration: 0.6, ease: "easeInOut" as const, delay }
 });
 
-export default function HostInfoCard({ hostInformation, reviewsAndRatings }: any) {
+export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { hostInformation: ListingData['host_information'], reviewsAndRatings: ListingData['ratings_and_reviews'] }) {
   return (
     <motion.div
       {...fadeInUp(0.45)}

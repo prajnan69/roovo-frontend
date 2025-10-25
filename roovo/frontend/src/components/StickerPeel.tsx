@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, CSSProperties } from 'react';
 import { gsap } from 'gsap';
 import { Draggable } from 'gsap/Draggable';
+import Image from 'next/image';
 
 gsap.registerPlugin(Draggable);
 
@@ -343,39 +344,45 @@ const StickerPeel: React.FC<StickerPeelProps> = ({
       >
         <div className="sticker-main" style={stickerMainStyle}>
           <div style={{ filter: 'url(#pointLight)' }}>
-            <img
+            <Image
               src={imageSrc}
               alt=""
               className="block"
               style={imageStyle}
               draggable="false"
               onContextMenu={e => e.preventDefault()}
+              width={width}
+              height={width}
             />
           </div>
         </div>
 
         <div className="absolute top-4 left-2 w-full h-full opacity-40" style={{ filter: 'brightness(0) blur(8px)' }}>
           <div className="sticker-flap" style={flapStyle}>
-            <img
+            <Image
               src={imageSrc}
               alt=""
               className="block"
               style={shadowImageStyle}
               draggable="false"
               onContextMenu={e => e.preventDefault()}
+              width={width}
+              height={width}
             />
           </div>
         </div>
 
         <div className="sticker-flap absolute w-full h-full left-0" style={flapStyle}>
           <div style={{ filter: 'url(#pointLightFlipped)' }}>
-            <img
+            <Image
               src={imageSrc}
               alt=""
               className="block"
               style={shadowImageStyle}
               draggable="false"
               onContextMenu={e => e.preventDefault()}
+              width={width}
+              height={width}
             />
           </div>
         </div>

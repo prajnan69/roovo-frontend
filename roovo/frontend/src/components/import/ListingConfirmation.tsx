@@ -204,7 +204,7 @@ export default function ListingConfirmationRedesigned({
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-gray-600 mt-2 sm:mt-4 flex items-start sm:items-center">
             <MapPin className="w-6 h-6 mr-2 text-gray-500" />
-            {data.locationAndNeighborhood?.address}
+            {data.location_and_neighborhood?.address}
           </p>
         </motion.div>
 
@@ -217,13 +217,13 @@ export default function ListingConfirmationRedesigned({
             >
               <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
                 <Home className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
-                <span>{data.propertyDetails?.propertyType}</span>
+                <span>{data.property_type}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
-                <span>{data.bookingAndAvailability?.houseRules?.maxGuests} guests</span>
+                <span>{data.house_rules?.maxGuests} guests</span>
               </div>
-              {data.propertyDetails?.sleepingArrangements?.map((room, index) => (
+              {data.accommodation?.sleepingArrangements?.map((room, index) => (
                 <div key={index} className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
                   <Bed className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
                   <span>{room.beds}</span>
@@ -237,7 +237,7 @@ export default function ListingConfirmationRedesigned({
                 About this property
               </h2>
               <p className={`text-gray-700 text-base sm:text-lg leading-relaxed whitespace-pre-line ${!isDescriptionExpanded && "line-clamp-5"}`}>
-                {data.propertyDetails?.description?.theSpace}
+                {data.property_description?.theSpace}
               </p>
               <button
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
@@ -259,52 +259,52 @@ export default function ListingConfirmationRedesigned({
             >
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-50/40 to-transparent pointer-events-none" />
               <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
-                {/* Host Info */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg flex-shrink-0">
-                    {data.hostInformation?.profilePictureUrl ? (
-                      <Image
-                        src={data.hostInformation.profilePictureUrl}
-                        alt={data.hostInformation.name}
-                        className="w-full h-full object-cover"
-                        fill
-                        sizes="(max-width: 640px) 80px, 96px"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <span className="text-4xl font-bold text-gray-600">
-                          {data.hostInformation?.name ? data.hostInformation.name.charAt(0).toUpperCase() : ''}
-                        </span>
-                      </div>
-                    )}
+            {/* Host Info */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg flex-shrink-0">
+                {data.host_information?.profilePictureUrl ? (
+                  <Image
+                    src={data.host_information.profilePictureUrl}
+                    alt={data.host_information.name}
+                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 80px, 96px"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-gray-600">
+                      {data.host_information?.name ? data.host_information.name.charAt(0).toUpperCase() : ''}
+                    </span>
                   </div>
+                )}
+              </div>
 
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
-                      Hosted by {data.hostInformation?.name}
-                    </h2>
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+                  Hosted by {data.host_information?.name}
+                </h2>
 
-                    <div className="flex items-center flex-wrap text-base sm:text-lg text-gray-600 gap-x-4 gap-y-2">
-                      {data.hostInformation?.isSuperhost && (
-                        <span className="inline-flex items-center">
-                          <Award className="w-5 h-5 text-yellow-500 mr-1" />
-                          Superhost
-                        </span>
-                      )}
-                      <span className="inline-flex items-center">
-                        <Star className="w-5 h-5 text-yellow-500 mr-1" />
-                        {data.reviewsAndRatings?.overallRating} ({data.reviewsAndRatings?.totalReviews} reviews)
-                      </span>
-                      <span className="inline-flex items-center">
-                        <Calendar className="w-5 h-5 text-gray-500 mr-1" />
-                        {data.hostInformation?.hostingSince}
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
-                      {data.hostInformation?.bio?.join(" ")}
-                    </p>
-                  </div>
+                <div className="flex items-center flex-wrap text-base sm:text-lg text-gray-600 gap-x-4 gap-y-2">
+                  {data.host_information?.isSuperhost && (
+                    <span className="inline-flex items-center">
+                      <Award className="w-5 h-5 text-yellow-500 mr-1" />
+                      Superhost
+                    </span>
+                  )}
+                  <span className="inline-flex items-center">
+                    <Star className="w-5 h-5 text-yellow-500 mr-1" />
+                    {data.ratings_and_reviews?.overallRating} ({data.ratings_and_reviews?.totalReviews} reviews)
+                  </span>
+                  <span className="inline-flex items-center">
+                    <Calendar className="w-5 h-5 text-gray-500 mr-1" />
+                    {data.host_information?.hostingSince}
+                  </span>
                 </div>
+                <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
+                  {data.host_information?.bio?.join(" ")}
+                </p>
+              </div>
+            </div>
               </div>
             </motion.div>
 
@@ -378,7 +378,7 @@ export default function ListingConfirmationRedesigned({
             <motion.div {...fadeInUp(0.7)}>
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Detailed Ratings</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {Object.entries(data.reviewsAndRatings?.detailedRatings || {}).map(([key, value]) => (
+                {Object.entries(data.ratings_and_reviews?.detailedRatings || {}).map(([key, value]) => (
                   <div key={key} className="flex items-center gap-2 bg-gray-50 p-4 rounded-lg">
                     {ratingIcons[key as keyof typeof ratingIcons]}
                     <span className="capitalize">{key}</span>
@@ -394,11 +394,11 @@ export default function ListingConfirmationRedesigned({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-6 h-6 text-gray-500" />
-                  <span>{data.bookingAndAvailability?.houseRules?.checkIn.split("m")[0]}m</span>
+                  <span>{data.house_rules?.checkIn.split("m")[0]}m</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-6 h-6 text-gray-500" />
-                  <span>{data.bookingAndAvailability?.houseRules?.checkOut}</span>
+                  <span>{data.house_rules?.checkOut}</span>
                 </div>
               </div>
             </motion.div>
@@ -408,18 +408,18 @@ export default function ListingConfirmationRedesigned({
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">House Rules</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className={`w-6 h-6 ${data.bookingAndAvailability?.houseRules?.petsAllowed ? 'text-green-500' : 'text-red-500'}`} />
-                  <span>{data.bookingAndAvailability?.houseRules?.petsAllowed ? "Pets allowed" : "No pets allowed"}</span>
+                  <CheckCircle2 className={`w-6 h-6 ${data.house_rules?.petsAllowed ? 'text-green-500' : 'text-red-500'}`} />
+                  <span>{data.house_rules?.petsAllowed ? "Pets allowed" : "No pets allowed"}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className={`w-6 h-6 ${data.bookingAndAvailability?.houseRules?.smokingAllowed ? 'text-green-500' : 'text-red-500'}`} />
-                  <span>{data.bookingAndAvailability?.houseRules?.smokingAllowed ? "Smoking allowed" : "No smoking allowed"}</span>
+                  <CheckCircle2 className={`w-6 h-6 ${data.house_rules?.smokingAllowed ? 'text-green-500' : 'text-red-500'}`} />
+                  <span>{data.house_rules?.smokingAllowed ? "Smoking allowed" : "No smoking allowed"}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className={`w-6 h-6 ${data.bookingAndAvailability?.houseRules?.commercialPhotographyAllowed ? 'text-green-500' : 'text-red-500'}`} />
-                  <span>{data.bookingAndAvailability?.houseRules?.commercialPhotographyAllowed ? "Commercial photography allowed" : "No commercial photography"}</span>
+                  <CheckCircle2 className={`w-6 h-6 ${data.house_rules?.commercialPhotographyAllowed ? 'text-green-500' : 'text-red-500'}`} />
+                  <span>{data.house_rules?.commercialPhotographyAllowed ? "Commercial photography allowed" : "No commercial photography"}</span>
                 </div>
-                {data.bookingAndAvailability?.houseRules?.additionalRules?.map((rule, index) => (
+                {data.house_rules?.additionalRules?.map((rule, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6 text-green-500" />
                     <span>{rule}</span>

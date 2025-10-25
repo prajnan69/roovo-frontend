@@ -55,7 +55,7 @@ export default function ConfirmPriceAndList({
 
   // --- CALCULATIONS ---
   const calculations = useMemo(() => {
-    const airbnbBasePrice = scrapedData.bookingAndAvailability.price.pricePerNight;
+    const airbnbBasePrice = scrapedData.booking_and_availability.price.pricePerNight;
     const roovoPrice = airbnbBasePrice * (1 - discountPercent / 100);
     const airbnbHostGets = airbnbBasePrice * (1 - AIRBNB_HOST_COMMISSION);
     const roovoCasualHostGets = roovoPrice * (1 - ROOVO_CASUAL_HOST_COMMISSION);
@@ -127,7 +127,7 @@ export default function ConfirmPriceAndList({
             Welcome, {hostName}! Let’s Price Your Listing.
           </h1>
           <p className="mt-3 text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
-            We've imported your listing. Now, let’s unlock your true earning potential on Roovo.
+            We&apos;ve imported your listing. Now, let’s unlock your true earning potential on Roovo.
           </p>
         </motion.div>
 
@@ -148,7 +148,7 @@ export default function ConfirmPriceAndList({
               <p className="text-xs text-gray-600 text-center mb-4">
                 What guests pay on Airbnb is{" "}
                 <span className="font-semibold text-gray-800">₹{airbnbBasePrice.toFixed(2)}</span>.{" "}
-                Because Roovo’s fees are lower, you can offer a better price and{" "}
+                Because Roovo&apos;s fees are lower, you can offer a better price and{" "}
                 <span className="text-green-600 font-semibold">still earn more</span>.
               </p>
               <div className="flex items-center gap-4">
@@ -175,7 +175,7 @@ export default function ConfirmPriceAndList({
               {isBadgeUnlocked && (
                 <div className="flex items-center justify-center gap-1 mt-2">
                   <div className="flex items-center gap-1 bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
-                    <BadgeCheck size={14} /> 'Best Value' Badge Unlocked!
+                    <BadgeCheck size={14} /> &apos;Best Value&apos; Badge Unlocked!
                   </div>
                   <button
                     className="text-xs text-gray-500 hover:text-gray-700"
@@ -205,7 +205,7 @@ export default function ConfirmPriceAndList({
           <p className="text-gray-600 mb-6">
             What guests pay on Airbnb is{" "}
             <span className="font-bold text-gray-800">₹{airbnbBasePrice.toFixed(2)}</span>. Because
-            Roovo’s fees are lower, you can offer a better price and{" "}
+            Roovo&apos;s fees are lower, you can offer a better price and{" "}
             <span className="font-bold text-green-600">still earn more</span>.
           </p>
 
@@ -235,7 +235,7 @@ export default function ConfirmPriceAndList({
             {isBadgeUnlocked && (
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold text-sm">
-                  <BadgeCheck size={18} /> 'Best Value' Badge Unlocked!
+                  <BadgeCheck size={18} /> &apos;Best Value&apos; Badge Unlocked!
                 </div>
                 <button
                   className="text-xs text-gray-500 hover:text-gray-700"
@@ -249,7 +249,7 @@ export default function ConfirmPriceAndList({
         </motion.div>
 
         {showBadgeInfo && (
-          <BestValueBadgeInfo onClose={() => setShowBadgeInfo(false)} airbnbBasePrice={scrapedData.bookingAndAvailability.price.pricePerNight} />
+          <BestValueBadgeInfo onClose={() => setShowBadgeInfo(false)} airbnbBasePrice={scrapedData.booking_and_availability.price.pricePerNight} />
         )}
 
         {/* --- EARNINGS COMPARISON --- */}
@@ -341,7 +341,7 @@ export default function ConfirmPriceAndList({
                 {model === "casual" ? (
                   <>
                     <h3 className="text-xl font-bold text-indigo-600">
-                      You’ve selected Casual Host
+                      You&apos;ve selected Casual Host
                     </h3>
                     <p className="mt-2 text-gray-600 text-sm sm:text-base">
                       Guests see <span className="font-semibold">₹{roovoCasualGuestPays.toFixed(2)}</span>.  
@@ -351,7 +351,7 @@ export default function ConfirmPriceAndList({
                 ) : (
                   <>
                     <h3 className="text-xl font-bold text-indigo-600">
-                      You’ve selected Subscription Host
+                      You&apos;ve selected Subscription Host
                     </h3>
                     <p className="mt-2 text-gray-600 text-sm sm:text-base">
                       Guests see <span className="font-semibold">₹{roovoPrice.toFixed(2)}</span>.  

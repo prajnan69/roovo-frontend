@@ -11,6 +11,7 @@ import BottomNavBar from "@/components/BottomNavBar";
 import Login from "@/components/Login";
 import BecomeAHost from "@/components/BecomeAHost";
 import Image from "next/image";
+import Link from "next/link";
 
 const inter = Inter({
 variable: "--font-inter",
@@ -167,7 +168,7 @@ export default function RootLayout({
           <div className="mx-auto">
             <div className="relative flex items-center justify-between h-20 px-6">
               <div className="flex-1 flex justify-start">
-                <a href="/" className="text-2xl font-bold text-slate-900">Roovo</a>
+                <Link href="/" className="text-2xl font-bold text-slate-900">Roovo</Link>
               </div>
 
               <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md">

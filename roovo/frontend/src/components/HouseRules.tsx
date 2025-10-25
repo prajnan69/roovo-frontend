@@ -1,8 +1,11 @@
 "use client";
 
-import { Clock, Users,Dog,Ban } from "lucide-react";
+import { Clock, Users, Dog, Ban, Check } from "lucide-react";
+import { ListingData } from "@/types";
 
-export default function HouseRules({ rules }: any) {
+export default function HouseRules({ rules }: { rules: ListingData['house_rules'] }) {
+  if (!rules) return null;
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">House Rules</h2>

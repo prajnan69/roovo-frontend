@@ -19,8 +19,8 @@ export default function MapView({ listing }: MapViewProps) {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
   });
 
-  const lat = listing.locationAndNeighborhood.latitude;
-  const lng = listing.locationAndNeighborhood.longitude;
+  const lat = listing.location_and_neighborhood.latitude;
+  const lng = listing.location_and_neighborhood.longitude;
 
   const center = {
     lat: !isNaN(lat) ? lat : 0,

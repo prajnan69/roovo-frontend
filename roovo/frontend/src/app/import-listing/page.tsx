@@ -70,12 +70,16 @@ const ImportListingPage = () => {
     const transformedData: ListingData = {
       id: data.id,
       title: data.title,
-      propertyDetails: data.propertyDetails,
-      bookingAndAvailability: data.bookingAndAvailability,
+      property_type: data.property_type,
+      property_description: data.property_description,
+      accommodation: data.accommodation,
+      price_per_night: data.price_per_night,
+      booking_and_availability: data.booking_and_availability,
+      house_rules: data.house_rules,
       amenities: data.amenities,
-      reviewsAndRatings: data.reviewsAndRatings,
-      hostInformation: data.hostInformation,
-      locationAndNeighborhood: data.locationAndNeighborhood,
+      ratings_and_reviews: data.ratings_and_reviews,
+      host_information: data.host_information,
+      location_and_neighborhood: data.location_and_neighborhood,
       media: data.media,
     };
 
@@ -145,7 +149,7 @@ const ImportListingPage = () => {
         )}
         {scrapedData && step === "pricing" && (
           <ConfirmPriceAndList
-            hostName={scrapedData.hostInformation.name}
+            hostName={scrapedData.host_information.name}
             importedListingId={importedListingId!}
             scrapedData={scrapedData}
             onConfirm={handlePriceConfirm}
