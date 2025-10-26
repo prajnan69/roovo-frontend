@@ -12,7 +12,7 @@ import DetailedRatings from '@/components/DetailedRatings';
 import CircularGallery from '@/components/CircularGallery';
 import { useWindowSize } from '@/hooks/useWindowSize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, XCircle, Share, Heart, ArrowLeft } from 'lucide-react';
+import { ChevronDown, XCircle, Share, Heart, ArrowLeft, Star } from 'lucide-react';
 import MobileImageCarousel from '@/components/MobileImageCarousel';
 import BookingBar from '@/components/BookingBar';
 import BookingCard from '@/components/BookingCard';
@@ -57,6 +57,7 @@ const ListingDetailsPage = () => {
   const [imageIndex, setImageIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [showNotIncluded, setShowNotIncluded] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -72,11 +73,11 @@ const ListingDetailsPage = () => {
   useEffect(() => {
     if (listing) {
       // Preload next set of images
-      if (listing.media && imageIndex + 5 < listing.media.allImageUrls.length) {
-        const nextImages = listing.media.allImageUrls.slice(imageIndex + 5, imageIndex + 10);
-        nextImages.forEach((src: string) => {
+      if (listing.all_image_urls && imageIndex + 5 < listing.all_image_urls.length) {
+        const nextImages = listing.all_image_urls.slice(imageIndex + 5, imageIndex + 10);
+        nextImages.forEach((image: any) => {
           const img = new window.Image();
-          img.src = src;
+          img.src = image.url;
         });
       }
     }
@@ -123,7 +124,7 @@ const ListingDetailsPage = () => {
         <>
           <div className="bg-gray-100">
           <div className="relative h-[40vh]">
-            <MobileImageCarousel images={listing.media.allImageUrls} />
+            <MobileImageCarousel images={listing.all_image_urls?.map((img: any) => img.url) || []} />
             <div className="absolute top-4 left-4 z-10">
               <button onClick={() => router.back()} className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
                 <ArrowLeft className="w-5 h-5 text-gray-800" />
@@ -142,43 +143,44 @@ const ListingDetailsPage = () => {
               <motion.h1 {...fadeInUp(0.1)} className="text-2xl font-bold tracking-tight text-gray-900 font-montserrat">
                 {listing.title}
               </motion.h1>
-              <motion.p {...fadeInUp(0.2)} className="text-sm text-gray-600 mt-1">
-                {listing.location_and_neighborhood?.address}
+              <motion.p {...fadeInUp(0.2)} className="text-sm text-gray-600">
+                {listing.property_type} · {listing.sleeping_arrangements?.length} bedrooms · {listing.total_beds} beds · {listing.total_bathrooms} bathrooms
               </motion.p>
-              <motion.p {...fadeInUp(0.25)} className="text-sm text-gray-600 mt-2">
-                {listing.property_type} · {listing.accommodation?.sleepingArrangements.reduce((acc, curr) => acc + parseInt(curr.beds), 0)} beds · {listing.accommodation?.totalBathrooms} bath · {listing.house_rules?.maxGuests} guests max
-              </motion.p>
-              <motion.div {...fadeInUp(0.3)} className="flex items-center text-sm text-gray-600 mt-2">
-                {listing.ratings_and_reviews?.overallRating ? (
-                  <>
-                    <span>★ {listing.ratings_and_reviews.overallRating.toFixed(1)}</span>
-                  </>
-                ) : null}
+              <motion.div {...fadeInUp(0.15)} className="flex items-center text-sm text-gray-600 mt-1">
+                <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                <span>{listing.overall_rating} </span>
+                <span className="mx-2">·</span>
+                <span>{listing.location?.city}</span>
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
-              <motion.p {...fadeInUp(0.3)} className="text-gray-700 text-base leading-relaxed">
-                {listing.property_description?.theSpace}
-              </motion.p>
+              <motion.div {...fadeInUp(0.3)}>
+                <p className={`text-gray-700 text-base leading-relaxed ${isDescriptionExpanded ? '' : 'line-clamp-3'}`}>
+                  {listing.the_space}
+                </p>
+                <button onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)} className="text-sm font-semibold underline mt-2">
+                  {isDescriptionExpanded ? 'Show less' : 'Know more'}
+                </button>
+              </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.4)}>
-                <HostInfoCard hostInformation={listing.host_information} reviewsAndRatings={listing.ratings_and_reviews} />
+                <HostInfoCard hostInformation={listing} reviewsAndRatings={listing} />
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.5)}>
-                <SleepingArrangements arrangements={listing.accommodation?.sleepingArrangements} />
+{listing.sleeping_arrangements && <SleepingArrangements arrangements={listing.sleeping_arrangements} />}
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.6)}>
                 <h2 className="text-xl font-bold mb-4">Amenities</h2>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  {listing.amenities.included.slice(0, 6).map((amenity: string) => (
+                  {listing.included_amenities?.slice(0, 6).map((amenity: string) => (
                     <div key={amenity} className="flex items-center">
                       <span className="text-green-500 mr-2">✓</span>
                       <span>{amenity}</span>
                     </div>
                   ))}
                 </div>
-                {listing.amenities.included.length > 6 && (
+                {listing.included_amenities && listing.included_amenities.length > 6 && (
                   <button className="mt-4 text-sm font-semibold underline">Show all amenities</button>
                 )}
                 <div className="mt-4">
@@ -195,7 +197,7 @@ const ListingDetailsPage = () => {
                   </button>
                   {showNotIncluded && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm text-gray-700 mt-4">
-                      {listing.amenities.notIncluded.map((amenity: string) => (
+                      {listing.not_included_amenities?.map((amenity: string) => (
                         <div
                           key={amenity}
                           className="flex items-center gap-4 group relative"
@@ -210,11 +212,11 @@ const ListingDetailsPage = () => {
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.7)}>
-                <HouseRules rules={listing.house_rules} />
+                <HouseRules rules={listing} />
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.8)} id="reviews">
-                <DetailedRatings ratings={listing.ratings_and_reviews} />
+                <DetailedRatings ratings={listing} />
               </motion.div>
             </div>
           </div>
@@ -222,11 +224,11 @@ const ListingDetailsPage = () => {
         </>
       ) : (
         <div className="mx-auto max-w-7xl py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
-          {showGallery && (
+      {showGallery && (
             <CircularGallery
-              items={listing.media.allImageUrls.map((img: string) => ({
-                image: img,
-                text: "Listing image",
+              items={listing.all_image_urls?.map((img: any) => ({
+                image: img.url,
+                text: img.alt,
               }))}
               font=" 34px 'roboto'"
               textColor="#ffffff"
@@ -240,10 +242,10 @@ const ListingDetailsPage = () => {
               <motion.div
                 key={imageIndex}
                 className={`grid gap-2 h-full rounded-2xl overflow-hidden shadow-xl ${
-                  listing.media.allImageUrls.slice(imageIndex, imageIndex + 5).length === 1 ? "grid-cols-1 grid-rows-1" :
-                  listing.media.allImageUrls.slice(imageIndex, imageIndex + 5).length === 2 ? "grid-cols-2 grid-rows-1" :
-                  listing.media.allImageUrls.slice(imageIndex, imageIndex + 5).length === 3 ? "grid-cols-3 grid-rows-1" :
-                  listing.media.allImageUrls.slice(imageIndex, imageIndex + 5).length === 4 ? "grid-cols-2 grid-rows-2" :
+                  (listing.all_image_urls?.slice(imageIndex, imageIndex + 5) || []).length === 1 ? "grid-cols-1 grid-rows-1" :
+                  (listing.all_image_urls?.slice(imageIndex, imageIndex + 5) || []).length === 2 ? "grid-cols-2 grid-rows-1" :
+                  (listing.all_image_urls?.slice(imageIndex, imageIndex + 5) || []).length === 3 ? "grid-cols-3 grid-rows-1" :
+                  (listing.all_image_urls?.slice(imageIndex, imageIndex + 5) || []).length === 4 ? "grid-cols-2 grid-rows-2" :
                   "grid-cols-4 grid-rows-2"
                 }`}
                 variants={imageContainerVariants}
@@ -251,13 +253,13 @@ const ListingDetailsPage = () => {
                 animate="visible"
                 exit="exit"
               >
-                {listing.media.allImageUrls.slice(imageIndex, imageIndex + 5).map((img: string, i: number) => (
+                {listing.all_image_urls?.slice(imageIndex, imageIndex + 5).map((img: any, i: number) => (
                   <motion.div
                     key={imageIndex + i}
                     className={`${
-                      listing.media.allImageUrls.slice(imageIndex, imageIndex + 5).length >= 5 && i === 0 ? "col-span-2 row-span-2" : ""
+                      (listing.all_image_urls?.slice(imageIndex, imageIndex + 5) || []).length >= 5 && i === 0 ? "col-span-2 row-span-2" : ""
                     } bg-cover bg-center relative cursor-pointer`}
-                    style={{ backgroundImage: `url(${img})` }}
+                    style={{ backgroundImage: `url(${img.url})` }}
                     variants={imageVariants}
                     onClick={() => setShowGallery(true)}
                   >
@@ -266,7 +268,7 @@ const ListingDetailsPage = () => {
                 ))}
               </motion.div>
             </AnimatePresence>
-            {imageIndex + 5 < listing.media.allImageUrls.length ? (
+            {listing.all_image_urls && imageIndex + 5 < listing.all_image_urls.length ? (
               <button
                 onClick={() => setImageIndex(imageIndex + 5)}
                 className="absolute bottom-4 right-4 bg-white/50 backdrop-blur-sm text-gray-800 font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-white/75 transition-colors cursor-pointer"
@@ -283,26 +285,41 @@ const ListingDetailsPage = () => {
             )}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-            <div className="lg:col-span-2 space-y-8 sm:space-y-12">
-              <motion.h1 {...fadeInUp(0.1)} className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 font-montserrat">
+            <div className="lg:col-span-2">
+              <motion.h1 {...fadeInUp(0.1)} className="text-3xl font-bold tracking-tight text-gray-900 font-montserrat">
                 {listing.title}
               </motion.h1>
-              <motion.p {...fadeInUp(0.2)} className="text-base sm:text-lg lg:text-xl text-gray-600 mt-2 sm:mt-4 flex items-start sm:items-center">
-                {listing.location_and_neighborhood.address}
+              <motion.p {...fadeInUp(0.2)} className="text-base text-gray-600">
+                {listing.property_type} · {listing.sleeping_arrangements?.length} bedrooms · {listing.total_beds} beds · {listing.total_bathrooms} bathrooms
               </motion.p>
-            <motion.p {...fadeInUp(0.3)} className="text-gray-700 text-base sm:text-lg leading-relaxed">
-              {listing.property_description?.theSpace}
-            </motion.p>
+              <motion.div {...fadeInUp(0.15)} className="flex items-center text-base text-gray-600 mt-1">
+                <Star className="w-5 h-5 text-yellow-500 mr-1" />
+                <span>{listing.overall_rating}</span>
+                <span className="mx-2">·</span>
+                <span>{listing.location?.city}</span>
+              </motion.div>
+              <div className="border-t border-gray-200 my-8" />
+              <motion.div {...fadeInUp(0.3)}>
+                <p className={`text-gray-700 text-base sm:text-lg leading-relaxed ${isDescriptionExpanded ? '' : 'line-clamp-3'}`}>
+                  {listing.the_space}
+                </p>
+                <button onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)} className="text-sm font-semibold underline mt-2">
+                  {isDescriptionExpanded ? 'Show less' : 'Know more'}
+                </button>
+              </motion.div>
+              <div className="border-t border-gray-200 my-8" />
             <motion.div {...fadeInUp(0.4)}>
-              <HostInfoCard hostInformation={listing.host_information} reviewsAndRatings={listing.ratings_and_reviews} />
+              <HostInfoCard hostInformation={listing} reviewsAndRatings={listing} />
             </motion.div>
+            <div className="border-t border-gray-200 my-8" />
             <motion.div {...fadeInUp(0.5)}>
-              <SleepingArrangements arrangements={listing.accommodation?.sleepingArrangements} />
+              {listing.sleeping_arrangements && <SleepingArrangements arrangements={listing.sleeping_arrangements} />}
             </motion.div>
+            <div className="border-t border-gray-200 my-8" />
             <motion.div {...fadeInUp(0.6)}>
               <h2 className="text-2xl font-bold mb-4">Amenities</h2>
               <div className="grid grid-cols-2 gap-4">
-                {listing.amenities.included.map((amenity: string) => (
+                {listing.included_amenities?.map((amenity: string) => (
                   <div key={amenity} className="flex items-center">
                     <span className="text-green-500 mr-2">✓</span>
                     <span>{amenity}</span>
@@ -323,7 +340,7 @@ const ListingDetailsPage = () => {
                 </button>
                 {showNotIncluded && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-base sm:text-lg text-gray-700 mt-4">
-                    {listing.amenities.notIncluded.map((amenity: string) => (
+                    {listing.not_included_amenities?.map((amenity: string) => (
                       <div
                         key={amenity}
                         className="flex items-center gap-4 group relative"
@@ -336,15 +353,17 @@ const ListingDetailsPage = () => {
                 )}
               </div>
             </motion.div>
+            <div className="border-t border-gray-200 my-8" />
             <motion.div {...fadeInUp(0.7)}>
-              <HouseRules rules={listing.house_rules} />
+              <HouseRules rules={listing} />
             </motion.div>
+            <div className="border-t border-gray-200 my-8" />
             <motion.div {...fadeInUp(0.8)}>
-              <DetailedRatings ratings={listing.ratings_and_reviews} />
+              <DetailedRatings ratings={listing} />
             </motion.div>
           </div>
           <div className="hidden lg:block lg:col-span-1">
-            <BookingCard price={listing.price_per_night} />
+            <BookingCard price={listing.price_per_night} max_guests={listing.max_guests || 0} />
           </div>
         </div>
         </div>

@@ -2,6 +2,7 @@ export interface ListingData {
   id: string;
   title: string;
   property_type: string;
+  propertyDetails: any;
   property_description: {
     theSpace: string;
     guestAccess: string | null;
@@ -13,6 +14,7 @@ export interface ListingData {
       beds: string;
     }[];
     totalBathrooms: number;
+    totalBeds?: number;
   };
   price_per_night: number;
   booking_and_availability: {
@@ -81,8 +83,45 @@ export interface ListingData {
   };
   media: {
     primaryImageUrl: string;
-    allImageUrls: string[];
+    allImageUrls: Image[];
   };
+  all_image_urls?: any[];
+  address?: string;
+  total_beds?: number;
+  total_bathrooms?: number;
+  max_guests: number;
+  overall_rating?: number;
+  the_space?: string;
+  sleeping_arrangements?: {
+    room: string;
+    beds: string;
+  }[];
+  included_amenities?: string[];
+  not_included_amenities?: string[];
+  location?: {
+    city: string;
+  };
+  host_profile_picture_url?: string;
+  host_name?: string;
+  is_superhost?: boolean;
+  hosting_since?: string;
+  host_bio?: string[];
+  cleanliness_rating?: number;
+  accuracy_rating?: number;
+  checkin_rating?: number;
+  communication_rating?: number;
+  location_rating?: number;
+  value_rating?: number;
+  pets_allowed?: boolean;
+  smoking_allowed?: boolean;
+  additional_rules?: string[];
+  gemini_response?: any;
+}
+
+export interface Image {
+  sl: number;
+  url: string;
+  alt: string;
 }
 
 export interface IndividualReview {

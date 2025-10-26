@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs from 'dayjs';
 
@@ -46,6 +47,9 @@ const DatePicker = ({ onSelect, checkIn, checkOut }: { onSelect: (date: Date) =>
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-2">
+        {checkIn && !checkOut ? 'Select check-out date' : 'Select check-in date'}
+      </motion.div>
       <div className="flex justify-between items-center mb-4">
         <button onClick={prevMonth}><ChevronLeft /></button>
         <h2 className="font-bold">{currentDate.format("MMMM YYYY")}</h2>

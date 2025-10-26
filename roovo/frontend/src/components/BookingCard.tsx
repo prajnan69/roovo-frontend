@@ -2,13 +2,14 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus, Minus } from 'lucide-react';
 import DatePicker from './DatePicker';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
 
-const BookingCard = ({ price }: { price: number }) => {
+const BookingCard = ({ price, max_guests }: { price: number, max_guests: number }) => {
   const [guests, setGuests] = useState(1);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showGuests, setShowGuests] = useState(false);
   const [checkInDate, setCheckInDate] = useState<Date | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
 
@@ -26,6 +27,9 @@ const BookingCard = ({ price }: { price: number }) => {
 
   const calendarRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(calendarRef, () => setShowCalendar(false));
+
+  const guestsRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside(guestsRef, () => setShowGuests(false));
 
   return (
     <motion.div
@@ -63,17 +67,43 @@ const BookingCard = ({ price }: { price: number }) => {
           )}
         </AnimatePresence>
         <div className="p-3 border-t relative">
-          <label htmlFor="guests" className="text-xs font-semibold text-gray-600">GUESTS</label>
-          <div className="flex justify-between items-center" onClick={() => setGuests(guests + 1)}>
-            <span className="text-sm">{guests} guest{guests > 1 && 's'}</span>
-            <ChevronDown className="w-5 h-5 text-gray-600" />
+          <div onClick={() => setShowGuests(!showGuests)}>
+            <label htmlFor="guests" className="text-xs font-semibold text-gray-600">GUESTS</label>
+            <div className="flex justify-between items-center">
+              <span className="text-sm">{guests} guest{guests > 1 && 's'} (Max {max_guests})</span>
+              <ChevronDown className={`w-5 h-5 text-gray-600 transition-transform ${showGuests ? 'rotate-180' : ''}`} />
+            </div>
           </div>
+          <AnimatePresence>
+            {showGuests && (
+              <motion.div
+                ref={guestsRef}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute z-10 top-full mt-2 bg-white p-4 rounded-lg shadow-lg border"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Guests</span>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setGuests(Math.max(1, guests - 1))} className="p-1 rounded-full border hover:bg-gray-100">
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span>{guests}</span>
+                    <button onClick={() => setGuests(Math.min(max_guests, guests + 1))} className="p-1 rounded-full border hover:bg-gray-100">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <button className=" cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors">
         Reserve
       </button>
-      <p className="text-center text-sm text-gray-600 mt-2">You won&apos;t be charged yet</p>
+      <p className="text-center text-sm text-gray-600 mt-2">You won't be charged yet</p>
     </motion.div>
   );
 };

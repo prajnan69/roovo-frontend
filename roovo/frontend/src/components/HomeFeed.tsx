@@ -5,32 +5,8 @@ import ListingSection from './ListingSection';
 import { API_BASE_URL } from '@/services/api';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import MobileSearchBar from './MobileSearchBar';
+import { ListingData as Listing } from '@/types';
 
-// --- Type Definitions (can be moved to a types.ts file) ---
-interface ApiLocation {
-  lat: number;
-  lng: number;
-  city: string;
-  address: string;
-}
-export interface Listing {
-  id: string;
-  title: string;
-  description: string;
-  price_per_night: number;
-  images: string[];
-  location: ApiLocation;
-  rating: number;
-  property_description: {
-    summary: string;
-  };
-  additional_information: {
-    imageUrls: {
-      url: string;
-      alt_text: string;
-    }[];
-  };
-}
 
 // --- Main HomeFeed Component ---
 const HomeFeed: React.FC = () => {
@@ -72,10 +48,10 @@ const HomeFeed: React.FC = () => {
         }
         const data = await response.json();
         // Add a random rating for demonstration purposes if not present
-        const listingsWithExtras = (data.data || []).map((listing: Listing) => ({
-          ...listing,
-          rating: listing.rating || (Math.random() * (5.0 - 4.2) + 4.2).toFixed(1),
-        }));
+const listingsWithExtras = (data.data || []).map((listing: Listing) => ({
+...listing,
+rating: listing.overall_rating || (Math.random() * (5.0 - 4.2) + 4.2).toFixed(1),
+}));
         setListings(listingsWithExtras);
 
         if (city && listingsWithExtras.length > 0) {
@@ -134,7 +110,7 @@ const HomeFeed: React.FC = () => {
     // --- Render the sections with actual data ---
     return (
       <div className="flex flex-col space-y-12">
-        {!imagesLoaded && <div className="flex justify-center items-center h-64"><Spinner size={48} /></div>}
+        {!imagesLoaded && <div className="flex justify-center items-center h-64"><Spinner size={24} /></div>}
         <div style={{ visibility: imagesLoaded ? 'visible' : 'hidden' }}>
           {popularHomes.length > 0 && <ListingSection title={popularTitle} listings={popularHomes} loading={false} onImageLoad={handleImageLoad} />}
           {weekendHomes.length > 0 && <ListingSection title="Available this weekend" listings={weekendHomes} loading={false} onImageLoad={handleImageLoad} />}

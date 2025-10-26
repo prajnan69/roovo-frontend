@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import ListingCard, { SkeletonCard } from './ListingCard';
-import { Listing } from './HomeFeed';
+import { ListingData as Listing } from '@/types';
 
 interface ListingSectionProps {
   title: string;

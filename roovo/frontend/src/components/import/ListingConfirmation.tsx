@@ -91,9 +91,9 @@ export default function ListingConfirmationRedesigned({
     // Preload next set of images
     if (data.media && imageIndex + 5 < data.media.allImageUrls.length) {
       const nextImages = data.media.allImageUrls.slice(imageIndex + 5, imageIndex + 10);
-      nextImages.forEach((src) => {
+      nextImages.forEach((image) => {
         const img = new window.Image();
-        img.src = src;
+        img.src = image.url;
       });
     }
   }, [imageIndex, data.media]);
@@ -141,13 +141,13 @@ export default function ListingConfirmationRedesigned({
               animate="visible"
               exit="exit"
             >
-              {images.slice(imageIndex, imageIndex + 5).map((img, i) => (
+              {images.slice(imageIndex, imageIndex + 5).map((image, i) => (
                 <motion.div
                   key={imageIndex + i}
                   className={`${
                     images.slice(imageIndex, imageIndex + 5).length >= 5 && i === 0 ? "col-span-2 row-span-2" : ""
                   } bg-cover bg-center relative cursor-pointer`}
-                  style={{ backgroundImage: `url(${img})` }}
+                  style={{ backgroundImage: `url(${image.url})` }}
                   variants={imageVariants}
                   whileHover={{ scale: 0.98 }}
                   transition={{ duration: 0.3 }}
@@ -178,15 +178,15 @@ export default function ListingConfirmationRedesigned({
         {showGallery &&
           (isMobile ? (
             <ImageGallery
-              images={images.map(url => ({ url, alt_text: 'Listing image' }))}
+              images={images.map(image => ({ url: image.url, alt_text: image.alt }))}
               initialIndex={0}
               onClose={() => setShowGallery(false)}
             />
           ) : (
             <CircularGallery
-              items={images.map((img) => ({
-                image: img,
-                text: "Listing image",
+              items={images.map((image) => ({
+                image: image.url,
+                text: image.alt,
               }))}
               font=" 34px 'roboto'"
               textColor="#ffffff"
@@ -223,12 +223,14 @@ export default function ListingConfirmationRedesigned({
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
                 <span>{data.house_rules?.maxGuests} guests</span>
               </div>
-              {data.accommodation?.sleepingArrangements?.map((room, index) => (
-                <div key={index} className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
-                  <Bed className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
-                  <span>{room.beds}</span>
-                </div>
-              ))}
+              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
+                <Bed className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
+                <span>{data.accommodation?.totalBeds} beds</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-700 text-base sm:text-lg">
+                <Home className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 flex-shrink-0" />
+                <span>{data.accommodation?.totalBathrooms} bathrooms</span>
+              </div>
             </motion.div>
 
             {/* About this property */}

@@ -11,7 +11,7 @@ const fadeInUp = (delay = 0) => ({
   transition: { duration: 0.6, ease: "easeInOut" as const, delay }
 });
 
-export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { hostInformation: ListingData['host_information'], reviewsAndRatings: ListingData['ratings_and_reviews'] }) {
+export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { hostInformation: ListingData, reviewsAndRatings: ListingData }) {
   return (
     <motion.div
       {...fadeInUp(0.45)}
@@ -21,10 +21,10 @@ export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { h
       <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-4 ring-indigo-100 shadow-lg flex-shrink-0">
-            {hostInformation?.profilePictureUrl ? (
+            {hostInformation?.host_profile_picture_url ? (
               <Image
-                src={hostInformation.profilePictureUrl}
-                alt={hostInformation.name}
+                src={hostInformation.host_profile_picture_url}
+                alt={hostInformation.host_name || 'Host'}
                 className="w-full h-full object-cover"
                 fill
                 sizes="(max-width: 640px) 80px, 96px"
@@ -32,7 +32,7 @@ export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { h
             ) : (
               <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                 <span className="text-4xl font-bold text-gray-600">
-                  {hostInformation?.name ? hostInformation.name.charAt(0).toUpperCase() : ''}
+                  {hostInformation?.host_name ? hostInformation.host_name.charAt(0).toUpperCase() : ''}
                 </span>
               </div>
             )}
@@ -40,11 +40,11 @@ export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { h
 
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
-              Hosted by {hostInformation?.name}
+              Hosted by {hostInformation?.host_name}
             </h2>
 
             <div className="flex items-center flex-wrap text-base sm:text-lg text-gray-600 gap-x-4 gap-y-2">
-              {hostInformation?.isSuperhost && (
+              {hostInformation?.is_superhost && (
                 <span className="inline-flex items-center">
                   <Award className="w-5 h-5 text-yellow-500 mr-1" />
                   Superhost
@@ -52,15 +52,15 @@ export default function HostInfoCard({ hostInformation, reviewsAndRatings }: { h
               )}
               <span className="inline-flex items-center">
                 <Star className="w-5 h-5 text-yellow-500 mr-1" />
-                {reviewsAndRatings?.overallRating} ({reviewsAndRatings?.totalReviews} reviews)
+                {reviewsAndRatings?.overall_rating} 
               </span>
               <span className="inline-flex items-center">
                 <Calendar className="w-5 h-5 text-gray-500 mr-1" />
-                {hostInformation?.hostingSince}
+                {hostInformation?.hosting_since}
               </span>
             </div>
             <p className="text-gray-500 text-base mt-3 max-w-lg leading-relaxed">
-              {hostInformation?.bio?.join(" ")}
+              {hostInformation?.host_bio?.join(" ")}
             </p>
           </div>
         </div>
