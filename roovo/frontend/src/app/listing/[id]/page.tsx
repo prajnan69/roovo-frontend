@@ -220,7 +220,7 @@ const ListingDetailsPage = () => {
               </motion.div>
             </div>
           </div>
-          <BookingBar price={listing.price_per_night} />
+          <BookingBar price={listing.price_per_night ?? 0} />
         </>
       ) : (
         <div className="mx-auto max-w-7xl py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
@@ -363,7 +363,7 @@ const ListingDetailsPage = () => {
             </motion.div>
           </div>
           <div className="hidden lg:block lg:col-span-1">
-            <BookingCard price={listing.price_per_night} max_guests={listing.max_guests || 0} />
+            <BookingCard price={listing.price_per_night ?? 0} max_guests={listing.max_guests || 0} />
           </div>
         </div>
         </div>

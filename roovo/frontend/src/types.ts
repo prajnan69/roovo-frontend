@@ -1,6 +1,9 @@
 export interface ListingData {
   id: string;
   title: string;
+  description?: string;
+  primary_image_url?: string;
+  guests?: number;
   property_type: string;
   propertyDetails: any;
   property_description: {
@@ -116,6 +119,10 @@ export interface ListingData {
   smoking_allowed?: boolean;
   additional_rules?: string[];
   gemini_response?: any;
+  listing_type?: string;
+  floors?: number;
+  floor?: number;
+  cleaning_fee?: number;
 }
 
 export interface Image {

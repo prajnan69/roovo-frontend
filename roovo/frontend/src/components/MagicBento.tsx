@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
+import { useRouter } from 'next/navigation';
 
 export interface BentoCardProps {
   color?: string;
@@ -498,6 +499,11 @@ const MagicBento: React.FC<BentoProps> = ({
   const gridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push('/hosting/manage-listings');
+  };
 
   return (
     <>
@@ -667,7 +673,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   enableTilt={enableTilt}
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
-                  onClick={card.onClick}
+                  onClick={handleCardClick}
                 >
                   <div className="card__header flex justify-between gap-3 relative text-white">
                     <span className="card__label text-base font-bold">{card.label}</span>
@@ -800,7 +806,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   el.addEventListener('mouseleave', handleMouseLeave);
                   el.addEventListener('click', handleClick);
                 }}
-                onClick={card.onClick}
+                onClick={handleCardClick}
               >
                 <div className="card__header flex justify-between gap-3 relative text-white">
                   <span className="card__label text-base">{card.label}</span>

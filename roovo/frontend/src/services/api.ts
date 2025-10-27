@@ -33,4 +33,13 @@ export const fetchListingById = async (id: string) => {
   return data;
 };
 
+export const getListingsByHostId = async (hostId: string) => {
+  const response = await fetch(`${API_BASE_URL}/api/listings/host/${hostId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch listings by host ID');
+  }
+  const result = await response.json();
+  return result.data;
+};
+
 export default supabase;

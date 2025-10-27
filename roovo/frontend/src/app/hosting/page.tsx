@@ -34,7 +34,7 @@ const HostingPage = () => {
   useEffect(() => {
     const cameFromHosting = sessionStorage.getItem('fromHosting');
     if (cameFromHosting) {
-      setLoading(false);
+      setIsHost(true);
       sessionStorage.removeItem('fromHosting');
     }
 
