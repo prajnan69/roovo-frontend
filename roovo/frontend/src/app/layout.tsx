@@ -12,6 +12,7 @@ import Login from "@/components/Login";
 import BecomeAHost from "@/components/BecomeAHost";
 import Image from "next/image";
 import Link from "next/link";
+import supabase from '@/services/api';
 
 const inter = Inter({
 variable: "--font-inter",
@@ -35,12 +36,13 @@ export default function RootLayout({
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isBecomeAHostOpen, setIsBecomeAHostOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isHost, setIsHost] = useState(false);
   const [loginMessage, setLoginMessage] = useState<{ title: string; subtitle: string } | null>(null);
   const [redirectPath, setRedirectPath] = useState<string | undefined>(undefined);
   const headerRef = useRef<HTMLDivElement>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const prevPathname = useRef(pathname);
-  const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname === '/import-listing';
+  const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname === '/import-listing' || pathname.startsWith('/hosting');
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -53,10 +55,21 @@ export default function RootLayout({
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    }
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsLoggedIn(true);
+        const { data: host } = await supabase
+          .from('hosts')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .single();
+        if (host) {
+          setIsHost(true);
+        }
+      }
+    };
+    checkUser();
   }, []);
 
   useEffect(() => {
@@ -91,10 +104,6 @@ export default function RootLayout({
           setIsScrolled(true);
         } else {
           setIsScrolled(false);
-          // Gently snap back to the top if not scrolled far enough
-          if (scrollTop > 0) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
         }
       }, 150); // Debounce time
     };
@@ -136,6 +145,11 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        <link rel="preload" href="/icons/man_t.png" as="image" />
+        <link rel="preload" href="/icons/man_h.png" as="image" />
+        <link rel="preload" href="/icons/globe_t.png" as="image" />
+      </head>
       <body className="antialiased bg-slate-50">
         <Login 
           isOpen={isLoginOpen} 
@@ -196,16 +210,23 @@ export default function RootLayout({
               </div>
               <div className="flex-1 flex justify-end">
                 <div className="flex items-center space-x-4">
-                  <button onClick={() => setIsBecomeAHostOpen(true)} className="flex items-center gap-2 text-slate-700 font-medium hover:text-indigo-600 transition-colors whitespace-nowrap group cursor-pointer">
-                    <Image src="/icons/become_host.png" alt="Become a host" width={48} height={48} className="transition-transform duration-300 group-hover:scale-110" />
-                    <span>Become a host</span>
-                  </button>
+                  {isHost ? (
+                    <Link href="/hosting" className="  hover:text-indigo-500 flex items-center gap-2 text-slate-700 font-medium p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
+                      <Image src="/buttons/host_mode.png" alt="Switch to hosting" width={32} height={32} className="transition-transform duration-300 group-hover:scale-110" />
+                      <span>Switch to hosting</span>
+                    </Link>
+                  ) : (
+                    <button onClick={() => setIsBecomeAHostOpen(true)} className="flex items-center gap-2 text-slate-700 font-medium hover:bg-indigo-200 p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
+                      <Image src="/icons/become_host.png" alt="Become a host" width={56} height={56} className="transition-transform duration-300 group-hover:scale-110" />
+                      <span>Become a host</span>
+                    </button>
+                  )}
                   {isLoggedIn ? (
                     <button onClick={() => setIsMenuOpen(true)} className="p-2 cursor-pointer">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
                   ) : (
-                    <button onClick={() => setIsLoginOpen(true)} className="bg-indigo-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-600 transition-colors duration-300">Login</button>
+                    <button onClick={() => setIsLoginOpen(true)} className="cursor-pointer rounded-4xl border-2 bg-none text-black font-semibold py-2 px-4  hover:bg-indigo-200 transition-colors duration-300">Login</button>
                   )}
                 </div>
               </div>

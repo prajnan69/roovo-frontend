@@ -46,6 +46,7 @@ interface StackProps {
   cardsData?: { id: number; img: string }[];
   animationConfig?: { stiffness: number; damping: number };
   onImageLoad: () => void;
+  isHovered?: boolean;
 }
 
 export default function Stack({
@@ -55,7 +56,8 @@ export default function Stack({
   cardsData = [],
   animationConfig = { stiffness: 260, damping: 20 },
   sendToBackOnClick = false,
-  onImageLoad
+  onImageLoad,
+  isHovered
 }: StackProps) {
   const [cards, setCards] = useState(
     cardsData.length
@@ -139,32 +141,35 @@ export default function Stack({
           </CardRotate>
         );
       })}
-      <div className="absolute bottom-2 right-2 z-20 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            sendToFront(cards[0].id);
-          }}
-          className="p-1 rounded-full bg-white/50 backdrop-blur-sm text-gray-800 font-semibold shadow-md hover:bg-white/75 transition-colors cursor-pointer"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            sendToBack(cards[cards.length - 1].id);
-          }}
-          className="p-1 rounded-full bg-white/50 backdrop-blur-sm text-gray-800 font-semibold shadow-md hover:bg-white/75 transition-colors cursor-pointer"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
+      {isHovered && (
+        <div className="absolute bottom-2 right-2 z-20 flex space-x-2 transition-opacity">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              sendToFront(cards[0].id);
+            }}
+            className="p-1 rounded-full bg-white/50 backdrop-blur-sm text-gray-800 font-semibold shadow-md hover:bg-white/75 transition-colors cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              sendToBack(cards[cards.length - 1].id);
+            }}
+            className="p-1 rounded-full bg-white/50 backdrop-blur-sm text-gray-800 font-semibold shadow-md hover:bg-white/75 transition-colors cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
+          

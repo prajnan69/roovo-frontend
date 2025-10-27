@@ -136,7 +136,7 @@ const Login = ({ isOpen, onClose, onLoginSuccess, title, subtitle, redirectPath 
                     </div>
                     <button
                       type="submit"
-                      className="w-full bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-600 transition-colors duration-300 text-lg cursor-pointer disabled:bg-indigo-300"
+                      className="w-full bg-transparent border-2 border-indigo-500 text-indigo-500 font-bold py-3 rounded-3xl hover:bg-indigo-500 hover:text-white transition-colors duration-300 text-lg cursor-pointer disabled:bg-indigo-300"
                       disabled={loading}
                     >
                       {loading ? 'Logging in...' : 'Login'}

@@ -35,15 +35,20 @@ export default function DetailedRatings({ ratings }: { ratings: ListingData }) {
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {Object.entries(detailedRatings).map(([key, value]) => (
-          <div key={key} className="border border-gray-200 rounded-lg p-4 text-center">
-            <h3 className="font-bold capitalize mb-2">{key}</h3>
-            <div className="flex items-center justify-center">
-              <Star className="w-6 h-6 mr-2 text-yellow-500" />
-              <p className="text-2xl font-bold">{value}</p>
+        {Object.entries(detailedRatings).map(([key, value]) => {
+          if (value === null || value === undefined) {
+            return null;
+          }
+          return (
+            <div key={key} className="border border-gray-200 rounded-lg p-4 text-center">
+              <h3 className="font-bold capitalize mb-2">{key}</h3>
+              <div className="flex items-center justify-center">
+                <Star className="w-6 h-6 mr-2 text-yellow-500" />
+                <p className="text-2xl font-bold">{value}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

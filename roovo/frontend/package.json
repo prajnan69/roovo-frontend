@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@radix-ui/react-switch": "^1.2.6",
     "@react-google-maps/api": "^2.20.7",
     "@supabase/supabase-js": "^2.57.4",

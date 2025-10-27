@@ -85,7 +85,7 @@ const ListingSection: React.FC<ListingSectionProps> = ({ title, listings, loadin
         <div
           ref={scrollContainerRef}
           onScroll={checkScrollability} // Re-check scrollability whenever the user manually scrolls
-          className={`flex ${isMobile ? 'space-x-4 px-4' : 'space-x-3'} overflow-x-auto pb-4 scrollbar-hide`}
+          className={`flex ${isMobile ? 'space-x-4 px-4' : 'space-x-6'} overflow-x-auto pb-4 scrollbar-hide`}
         >
           {loading
             ? Array.from({ length: 8 }).map((_, index) => <SkeletonCard key={`skel-${index}`} isMobile={isMobile} />)

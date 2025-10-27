@@ -260,7 +260,7 @@ const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             <motion.button 
               whileHover={{ scale: 1.05 }} 
               whileTap={{ scale: prefersReducedMotion ? 1 : 0.95 }}
-              className="ml-3 bg-gradient-to-r from-pink-500 to-red-600 rounded-full p-3 text-white shadow-lg z-10 flex items-center justify-center gap-2 cursor-pointer"
+              className="ml-3 bg-indigo-500 rounded-full p-3 text-white shadow-lg z-10 flex items-center justify-center gap-2 cursor-pointer"
               animate={{
                 scale: 1,
                 boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",

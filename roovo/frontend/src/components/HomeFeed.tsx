@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ListingSection from './ListingSection';
 import { API_BASE_URL } from '@/services/api';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
@@ -16,12 +16,15 @@ const HomeFeed: React.FC = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [popularTitle, setPopularTitle] = useState('Popular homes in Karnataka');
-  const totalImages = listings.length;
-  let loadedImages = 0;
+  const loadedImagesCount = useRef(0);
+
+  const popularHomes = listings.slice(0, 8);
+  const weekendHomes = listings.slice(8, 16);
+  const newHomes = listings.slice(4, 12);
 
   const handleImageLoad = () => {
-    loadedImages++;
-    if (loadedImages >= totalImages) {
+    loadedImagesCount.current += 1;
+    if (loadedImagesCount.current >= popularHomes.length) {
       setImagesLoaded(true);
     }
   };
@@ -73,20 +76,12 @@ rating: listing.overall_rating || (Math.random() * (5.0 - 4.2) + 4.2).toFixed(1)
     fetchListings();
   }, []);
 
-  // --- Slicing data into sections to simulate curated feeds ---
-  const popularHomes = listings.slice(0, 8);
-  const weekendHomes = listings.slice(8, 16);
-  const newHomes = listings.slice(4, 12); // Overlapping for variety
-
   // --- Conditional Rendering Logic ---
   const renderContent = () => {
     if (loading) {
-      // Show skeletons for all sections while initial data is loading
       return (
-        <div className="flex flex-col space-y-12">
-          <ListingSection title="Popular homes in your area" listings={[]} loading={true} onImageLoad={handleImageLoad} />
-          <ListingSection title="Available this weekend" listings={[]} loading={true} onImageLoad={handleImageLoad} />
-          <ListingSection title="New homes on Roovo" listings={[]} loading={true} onImageLoad={handleImageLoad} />
+        <div className="flex justify-center items-center h-64">
+          <Spinner size={24} />
         </div>
       );
     }
@@ -113,8 +108,8 @@ rating: listing.overall_rating || (Math.random() * (5.0 - 4.2) + 4.2).toFixed(1)
         {!imagesLoaded && <div className="flex justify-center items-center h-64"><Spinner size={24} /></div>}
         <div style={{ visibility: imagesLoaded ? 'visible' : 'hidden' }}>
           {popularHomes.length > 0 && <ListingSection title={popularTitle} listings={popularHomes} loading={false} onImageLoad={handleImageLoad} />}
-          {weekendHomes.length > 0 && <ListingSection title="Available this weekend" listings={weekendHomes} loading={false} onImageLoad={handleImageLoad} />}
-          {newHomes.length > 0 && <ListingSection title="New homes on Roovo" listings={newHomes} loading={false} onImageLoad={handleImageLoad} />}
+          {weekendHomes.length > 0 && <ListingSection title="Available this weekend" listings={weekendHomes} loading={false} onImageLoad={() => {}} />}
+          {newHomes.length > 0 && <ListingSection title="New homes on Roovo" listings={newHomes} loading={false} onImageLoad={() => {}} />}
         </div>
       </div>
     );

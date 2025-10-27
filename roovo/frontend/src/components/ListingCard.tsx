@@ -15,6 +15,7 @@ interface ListingCardProps {
 // --- Main ListingCard Component ---
 const ListingCard: React.FC<ListingCardProps> = ({ listing, onImageLoad, isMobile }) => {
   const [isBadgeHovered, setIsBadgeHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const isGuestFavourite = listing.overall_rating && listing.overall_rating > 4.8;
   const displayLocation = listing.location?.city || 'Location unavailable';
   const images = (listing.all_image_urls || []).slice(0, 5).map((src, index) => {
@@ -28,10 +29,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onImageLoad, isMobil
       target="_blank"
       rel="noopener noreferrer"
       className={`cursor-pointer ${isMobile ? 'w-48' : 'w-48'} flex-shrink-0 isolate`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* --- Image Carousel --- */}
       <div className="relative rounded-2xl aspect-square group">
-        <Stack cardsData={images} cardDimensions={isMobile ? { width: 192, height: 192 } : { width: 192, height: 192 }} onImageLoad={onImageLoad} />
+        <Stack cardsData={images} cardDimensions={isMobile ? { width: 192, height: 192 } : { width: 192, height: 192 }} onImageLoad={onImageLoad} isHovered={isHovered} />
         
         {/* "Guest favourite" Badge */}
         {isGuestFavourite && (
@@ -68,9 +71,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onImageLoad, isMobil
       {/* --- Listing Info --- */}
       <div className="mt-2">
         <h3 className="font-medium text-sm text-slate-800">{listing.title}</h3>
+        <p className="text-xs text-slate-500 mt-1">{displayLocation}</p>
         <div className="text-xs text-slate-500 flex items-center space-x-1 mt-1">
-            <span>{displayLocation}</span>
-            <span>·</span>
             <span>
                 ₹{listing.price_per_night} night
             </span>
