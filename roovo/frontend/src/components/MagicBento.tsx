@@ -8,6 +8,7 @@ export interface BentoCardProps {
   label?: string;
   textAutoHide?: boolean;
   disableAnimations?: boolean;
+  onClick?: () => void;
 }
 
 export interface BentoProps {
@@ -22,51 +23,13 @@ export interface BentoProps {
   glowColor?: string;
   clickEffect?: boolean;
   enableMagnetism?: boolean;
+  cardData: BentoCardProps[];
 }
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
 const DEFAULT_GLOW_COLOR = '132, 0, 255';
 const MOBILE_BREAKPOINT = 768;
-
-const cardData: BentoCardProps[] = [
-  {
-    color: '#060010',
-    title: 'Today',
-    description: 'View your reservations for today',
-    label: 'Reservations'
-  },
-  {
-    color: '#060010',
-    title: 'Calendar',
-    description: 'Manage your availability',
-    label: 'Planning'
-  },
-  {
-    color: '#060010',
-    title: 'Listings',
-    description: 'Manage your properties',
-    label: 'Properties'
-  },
-  {
-    color: '#060010',
-    title: 'Messages',
-    description: 'Communicate with your guests',
-    label: 'Communication'
-  },
-  {
-    color: '#060010',
-    title: 'Account Settings',
-    description: 'Manage your account details',
-    label: 'Settings'
-  },
-  {
-    color: '#060010',
-    title: 'Create New Listing',
-    description: 'Add a new property to your portfolio',
-    label: 'New'
-  }
-];
 
 const createParticleElement = (x: number, y: number, color: string = DEFAULT_GLOW_COLOR): HTMLDivElement => {
   const el = document.createElement('div');
@@ -112,6 +75,7 @@ const ParticleCard: React.FC<{
   enableTilt?: boolean;
   clickEffect?: boolean;
   enableMagnetism?: boolean;
+  onClick?: () => void;
 }> = ({
   children,
   className = '',
@@ -121,7 +85,8 @@ const ParticleCard: React.FC<{
   glowColor = DEFAULT_GLOW_COLOR,
   enableTilt = true,
   clickEffect = false,
-  enableMagnetism = false
+  enableMagnetism = false,
+  onClick
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement[]>([]);
@@ -343,6 +308,7 @@ const ParticleCard: React.FC<{
       ref={cardRef}
       className={`${className} relative overflow-hidden`}
       style={{ ...style, position: 'relative', overflow: 'hidden' }}
+      onClick={onClick}
     >
       {children}
     </div>
@@ -526,7 +492,8 @@ const MagicBento: React.FC<BentoProps> = ({
   enableTilt = false,
   glowColor = DEFAULT_GLOW_COLOR,
   clickEffect = true,
-  enableMagnetism = true
+  enableMagnetism = true,
+  cardData
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
@@ -700,6 +667,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   enableTilt={enableTilt}
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
+                  onClick={card.onClick}
                 >
                   <div className="card__header flex justify-between gap-3 relative text-white">
                     <span className="card__label text-base font-bold">{card.label}</span>
@@ -832,6 +800,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   el.addEventListener('mouseleave', handleMouseLeave);
                   el.addEventListener('click', handleClick);
                 }}
+                onClick={card.onClick}
               >
                 <div className="card__header flex justify-between gap-3 relative text-white">
                   <span className="card__label text-base">{card.label}</span>

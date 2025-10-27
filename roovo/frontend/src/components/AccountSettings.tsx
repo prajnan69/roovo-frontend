@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Shield, Bell, CreditCard, Globe, FileText, Lock } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Spinner } from './ui/shadcn-io/spinner';
 
 const AccountSettings = () => {
   const [activeSection, setActiveSection] = useState('personal-info');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     sessionStorage.setItem('fromHosting', 'true');
@@ -27,11 +30,15 @@ const AccountSettings = () => {
       <div className="w-full max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Account settings</h1>
-          <Link href="/hosting">
-            <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-              Done
-            </button>
-          </Link>
+          <button
+            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            onClick={() => {
+              setLoading(true);
+              router.push('/hosting');
+            }}
+          >
+            {loading ? <Spinner /> : 'Done'}
+          </button>
         </div>
 
         <div className="flex gap-8">

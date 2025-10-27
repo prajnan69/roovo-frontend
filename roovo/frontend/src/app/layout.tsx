@@ -3,7 +3,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ModernSearchBar, { transition } from "@/components/ModernSearchBar";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import HamburgerMenu from "@/components/HamburgerMenu";
 import { usePathname } from "next/navigation";
@@ -45,6 +45,21 @@ export default function RootLayout({
   const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname === '/import-listing' || pathname.startsWith('/hosting');
   const [isMobile, setIsMobile] = useState(false);
 
+  const checkUser = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setIsLoggedIn(true);
+      const { data: host } = await supabase
+        .from('hosts')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .single();
+      if (host) {
+        setIsHost(true);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -55,22 +70,8 @@ export default function RootLayout({
   }, []);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setIsLoggedIn(true);
-        const { data: host } = await supabase
-          .from('hosts')
-          .select('id')
-          .eq('user_id', session.user.id)
-          .single();
-        if (host) {
-          setIsHost(true);
-        }
-      }
-    };
     checkUser();
-  }, []);
+  }, [checkUser]);
 
   useEffect(() => {
     if (prevPathname.current !== pathname) {
@@ -126,15 +127,15 @@ export default function RootLayout({
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsLoggedIn(false);
+    setIsHost(false);
     setIsMenuOpen(false);
   };
 
   const handleLoginSuccess = () => {
-    localStorage.setItem('token', 'dummy-token'); // In a real app, use a real token
-    setIsLoggedIn(true);
+    checkUser();
   };
 
   const closeLogin = () => {
@@ -210,13 +211,13 @@ export default function RootLayout({
               </div>
               <div className="flex-1 flex justify-end">
                 <div className="flex items-center space-x-4">
-                  {isHost ? (
+                  {isLoggedIn && isHost ? (
                     <Link href="/hosting" className="  hover:text-indigo-500 flex items-center gap-2 text-slate-700 font-medium p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
                       <Image src="/buttons/host_mode.png" alt="Switch to hosting" width={32} height={32} className="transition-transform duration-300 group-hover:scale-110" />
                       <span>Switch to hosting</span>
                     </Link>
                   ) : (
-                    <button onClick={() => setIsBecomeAHostOpen(true)} className="flex items-center gap-2 text-slate-700 font-medium hover:bg-indigo-200 p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
+                    <button onClick={() => setIsBecomeAHostOpen(true)} className="flex items-center gap-2 text-slate-700 font-medium hover:text-indigo-500 p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
                       <Image src="/icons/become_host.png" alt="Become a host" width={56} height={56} className="transition-transform duration-300 group-hover:scale-110" />
                       <span>Become a host</span>
                     </button>

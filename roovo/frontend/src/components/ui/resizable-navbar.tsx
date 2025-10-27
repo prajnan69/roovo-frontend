@@ -7,6 +7,7 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "motion/react";
+import { Spinner } from "./shadcn-io/spinner";
 
 import React, { useRef, useState } from "react";
 
@@ -253,6 +254,7 @@ export const NavbarButton = ({
   children,
   className,
   variant = "primary",
+  loading,
   ...props
 }: {
   href?: string;
@@ -260,6 +262,7 @@ export const NavbarButton = ({
   children: React.ReactNode;
   className?: string;
   variant?: "primary" | "secondary" | "dark" | "gradient";
+  loading?: boolean;
 } & (
   | React.ComponentPropsWithoutRef<"a">
   | React.ComponentPropsWithoutRef<"button">
@@ -282,7 +285,7 @@ export const NavbarButton = ({
       className={cn(baseStyles, variantStyles[variant], className)}
       {...props}
     >
-      {children}
+      {loading ? <Spinner /> : children}
     </Tag>
   );
 };
