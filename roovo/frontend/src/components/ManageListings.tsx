@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getListingsByHostId, fetchListingById } from "@/services/api";
+import supabase, { getListingsByHostId, fetchListingById } from "@/services/api";
 import { ListingData } from "@/types";
 import Counter from "./Counter";
 import { Spinner } from "./ui/shadcn-io/spinner";
@@ -45,10 +45,18 @@ export default function ManageListings() {
   useEffect(() => {
     const fetchHostListings = async () => {
       try {
-        // TODO: Replace with actual host ID from user session
-        const hostId = "177c6740-80fd-48f1-869e-cc12fcde2ab1";
-        const data = await getListingsByHostId(hostId);
-        setListings(data);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data: host } = await supabase
+            .from('hosts')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .single();
+          if (host) {
+            const data = await getListingsByHostId(host.id);
+            setListings(data);
+          }
+        }
       } catch (err) {
         setError("Failed to fetch listings. Please try again later.");
         console.error(err);
@@ -165,8 +173,6 @@ export default function ManageListings() {
       </div>
     );
   }
-  console.log("Listings fetched:", selectedListing);
-  console.log("Selected listing:", listings);
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-black via-[#0d0d0f] to-black text-white overflow-hidden">
       {/* Page Heading */}

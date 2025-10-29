@@ -107,7 +107,7 @@ const HostingPage = () => {
         title: 'Calendar',
         description: 'Manage your availability',
         label: 'Planning',
-        url: '/hosting/planning'
+        url: '/hosting/calendar'
       },
       {
         color: '#060010',
