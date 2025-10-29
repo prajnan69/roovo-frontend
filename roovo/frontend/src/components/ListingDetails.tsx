@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Home, Tag, Info, List, User, Settings } from 'lucide-react';
+import { Home, Tag, Info, List, User, Settings, MessageSquare } from 'lucide-react';
 import { ListingData } from '@/types';
+import { useRouter } from 'next/navigation';
+import supabase from '@/services/api';
+import { API_BASE_URL } from '@/services/api';
 
 // Accent token
 const ACCENT = '#FF5A5F'; // Airbnb coral
@@ -67,6 +70,7 @@ const ListingDetails = ({ data }: { data: ListingData }) => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [activeSection, setActiveSection] = useState(sections[0].id);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -81,6 +85,31 @@ const ListingDetails = ({ data }: { data: ListingData }) => {
         ? listingData.included_amenities.filter(a => a !== amenity)
         : [...listingData.included_amenities, amenity]
     });
+  };
+
+  const handleChatWithHost = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push('/login');
+      return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/chat/conversations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listing_id: listingData.id,
+        guest_id: session.user.id,
+        host_id: listingData.host_id,
+      }),
+    });
+
+    if (response.ok) {
+      const conversation = await response.json();
+      router.push(`/listing/${listingData.id}/chat/${conversation.id}`);
+    } else {
+      console.error("Failed to create conversation");
+    }
   };
 
   const renderSectionContent = () => {
@@ -189,6 +218,15 @@ const ListingDetails = ({ data }: { data: ListingData }) => {
             </SettingItem>
             <SettingItem label="Superhost Status">
               <span className={`px-3 py-1 rounded-full text-sm ${listingData.is_superhost ? 'bg-green-500 text-black' : 'bg-yellow-600 text-black'}`}>{listingData.is_superhost ? 'Superhost' : 'Standard'}</span>
+            </SettingItem>
+            <SettingItem label="Chat with Host">
+              <button
+                onClick={handleChatWithHost}
+                className="px-5 py-2 rounded-full font-semibold transition-all duration-250 bg-gradient-to-r from-[#FF7A7D] to-[#FF5A5F] text-white shadow-md"
+                style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <MessageSquare size={20} />
+              </button>
             </SettingItem>
           </SettingSection>
         );

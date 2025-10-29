@@ -5,13 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
 import DatePicker from './DatePicker';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
-
-const BookingCard = ({ price, max_guests }: { price: number, max_guests: number }) => {
+import { useRouter } from 'next/navigation';
+import supabase from '@/services/api';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
+import { API_BASE_URL } from '@/services/api';
+const BookingCard = ({ price, max_guests, host_id, listing_id }: { price: number, max_guests: number, host_id: string, listing_id: number }) => {
+  const router = useRouter();
   const [guests, setGuests] = useState(1);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showGuests, setShowGuests] = useState(false);
   const [checkInDate, setCheckInDate] = useState<Date | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleDateSelect = (date: Date) => {
     if (!checkInDate || (checkInDate && checkOutDate)) {
@@ -103,6 +110,68 @@ const BookingCard = ({ price, max_guests }: { price: number, max_guests: number 
       <button className=" cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors">
         Reserve
       </button>
+      <AnimatePresence>
+        {showChatModal ? (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full h-24 p-2 border rounded-lg mt-4"
+              placeholder="Send your query to the host"
+            />
+            <div className="flex justify-end gap-4 mt-2">
+              <button
+                onClick={() => setShowChatModal(false)}
+                className="bg-gray-200 text-black font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setIsLoading(true);
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session) {
+                    // or show a login modal
+                    setIsLoading(false);
+                    return;
+                  }
+                  const guest_id = session.user.id;
+                    const response = await fetch(`${API_BASE_URL}/api/chat/conversations`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                      body: JSON.stringify({
+                        listing_id,
+                        guest_id,
+                        message,
+                      }),
+                  });
+                  const newConversation = await response.json();
+                  router.push(`/messages?conversationId=${newConversation.id}`);
+                  setIsLoading(false);
+                }}
+                className="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Send
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          <button 
+            onClick={() => setShowChatModal(true)}
+            className="w-full mt-2 bg-gray-200 text-black font-bold py-3 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center"
+            disabled={isLoading}
+          >
+            {isLoading ? <Spinner /> : 'Chat with host'}
+          </button>
+        )}
+      </AnimatePresence>
       <p className="text-center text-sm text-gray-600 mt-2">You won't be charged yet</p>
     </motion.div>
   );

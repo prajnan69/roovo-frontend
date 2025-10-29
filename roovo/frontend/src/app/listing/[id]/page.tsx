@@ -363,7 +363,7 @@ const ListingDetailsPage = () => {
             </motion.div>
           </div>
           <div className="hidden lg:block lg:col-span-1">
-            <BookingCard price={listing.price_per_night ?? 0} max_guests={listing.max_guests || 0} />
+            <BookingCard price={listing.price_per_night ?? 0} max_guests={listing.max_guests || 0} host_id={String(listing.host_id)} listing_id={listing.id} />
           </div>
         </div>
         </div>

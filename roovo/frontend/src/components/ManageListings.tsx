@@ -205,7 +205,7 @@ export default function ManageListings() {
               key={listing.id}
               onClick={async () => {
                 try {
-                  const detailedListing = await fetchListingById(listing.id);
+                  const detailedListing = await fetchListingById(String(listing.id));
                   setSelectedListing(detailedListing);
                   setActiveTab("Overview");
                 } catch (error) {

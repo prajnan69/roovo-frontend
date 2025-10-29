@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const router = useRouter();
 
   const bookings = [
     { id: 1, date: new Date(2025, 10, 12), guest: "John Doe" },
@@ -38,9 +40,14 @@ const Calendar = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex items-center mb-8">
+        <button onClick={() => router.back()} className="mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
         <h1 className="text-3xl font-bold">Calendar</h1>
-        <button className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">
+        <button className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg ml-auto">
           Import Calendar
         </button>
       </div>

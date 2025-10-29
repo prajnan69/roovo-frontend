@@ -9,6 +9,7 @@ import {
   LogOut,
   Search,
   Shield,
+  MessageSquare,
 } from 'lucide-react';
 
 const sharedLinks = [
@@ -22,6 +23,7 @@ const hostLinks = [
 
 const guestLinks = [
     { href: '/search', label: 'Search', icon: <Search size={20} /> },
+    { href: '/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
     { href: '/resolution-center', label: 'Resolution Center', icon: <Shield size={20} /> },
 ];
 

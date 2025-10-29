@@ -1,5 +1,6 @@
 export interface ListingData {
-  id: string;
+  id: number;
+  host_id?: string;
   title: string;
   description?: string;
   primary_image_url?: string;
