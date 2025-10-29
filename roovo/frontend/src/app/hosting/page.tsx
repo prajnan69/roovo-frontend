@@ -38,6 +38,8 @@ const HostingPage = () => {
       setIsHost(true);
       setInitialLoad(false);
       sessionStorage.removeItem('fromHosting');
+    } else {
+      setInitialLoad(true);
     }
 
     const checkUser = async () => {
