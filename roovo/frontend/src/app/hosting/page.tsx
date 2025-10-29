@@ -23,6 +23,7 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 const HostingPage = () => {
   const [isHost, setIsHost] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [userName, setUserName] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -35,6 +36,7 @@ const HostingPage = () => {
     const cameFromHosting = sessionStorage.getItem('fromHosting');
     if (cameFromHosting) {
       setIsHost(true);
+      setInitialLoad(false);
       sessionStorage.removeItem('fromHosting');
     }
 
@@ -56,7 +58,7 @@ const HostingPage = () => {
     checkUser();
   }, []);
 
-  if (loading) {
+  if (loading && initialLoad) {
     return (
       <motion.div
         className="min-h-screen flex flex-col items-center justify-center"
@@ -64,7 +66,10 @@ const HostingPage = () => {
         transition={{ duration: 1, ease: "easeInOut" }}
       >
         <SwitchingToHostLoader
-          onAnimationComplete={() => setLoading(false)}
+          onAnimationComplete={() => {
+            setLoading(false);
+            setInitialLoad(false);
+          }}
           onTransitionStart={() => setIsTransitioning(true)}
         />
         <motion.div
@@ -93,42 +98,42 @@ const HostingPage = () => {
         title: 'Today',
         description: 'View your reservations for today',
         label: 'Reservations',
-        onClick: () => console.log('Reservations clicked') // Placeholder
+        url: '/hosting/reservations'
       },
       {
         color: '#060010',
         title: 'Calendar',
         description: 'Manage your availability',
         label: 'Planning',
-        onClick: () => console.log('Calendar clicked') // Placeholder
+        url: '/hosting/planning'
       },
       {
         color: '#060010',
         title: 'Listings',
         description: 'Manage your properties',
         label: 'Properties',
-        onClick: () => console.log('Listings clicked') // Placeholder
+        url: '/hosting/manage-listings'
       },
       {
         color: '#060010',
         title: 'Messages',
         description: 'Communicate with your guests',
         label: 'Communication',
-        onClick: () => console.log('Messages clicked') // Placeholder
+        url: '/hosting/messages'
       },
       {
         color: '#060010',
         title: 'Account Settings',
         description: 'Manage your account details',
         label: 'Settings',
-        onClick: () => router.push('/hosting/account-settings')
+        url: '/hosting/account-settings'
       },
       {
         color: '#060010',
         title: 'Create New Listing',
         description: 'Add a new property to your portfolio',
         label: 'New',
-        onClick: () => setIsNewListingModalOpen(true)
+        url: '/hosting/new-listing'
       }
     ];
 

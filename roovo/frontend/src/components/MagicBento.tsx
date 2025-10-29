@@ -10,6 +10,7 @@ export interface BentoCardProps {
   textAutoHide?: boolean;
   disableAnimations?: boolean;
   onClick?: () => void;
+  url?: string;
 }
 
 export interface BentoProps {
@@ -501,8 +502,10 @@ const MagicBento: React.FC<BentoProps> = ({
   const shouldDisableAnimations = disableAnimations || isMobile;
   const router = useRouter();
 
-  const handleCardClick = () => {
-    router.push('/hosting/manage-listings');
+  const handleCardClick = (url?: string) => {
+    if (url) {
+      router.push(url);
+    }
   };
 
   return (
@@ -673,7 +676,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   enableTilt={enableTilt}
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
-                  onClick={handleCardClick}
+                  onClick={() => handleCardClick(card.url)}
                 >
                   <div className="card__header flex justify-between gap-3 relative text-white">
                     <span className="card__label text-base font-bold">{card.label}</span>
@@ -806,7 +809,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   el.addEventListener('mouseleave', handleMouseLeave);
                   el.addEventListener('click', handleClick);
                 }}
-                onClick={handleCardClick}
+                onClick={() => handleCardClick(card.url)}
               >
                 <div className="card__header flex justify-between gap-3 relative text-white">
                   <span className="card__label text-base">{card.label}</span>

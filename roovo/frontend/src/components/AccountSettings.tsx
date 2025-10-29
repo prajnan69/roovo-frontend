@@ -5,14 +5,25 @@ import { motion } from 'framer-motion';
 import { User, Shield, Bell, CreditCard, Globe, FileText, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Spinner } from './ui/shadcn-io/spinner';
+import supabase from '@/services/api';
 
 const AccountSettings = () => {
   const [activeSection, setActiveSection] = useState('personal-info');
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
     sessionStorage.setItem('fromHosting', 'true');
+    const fetchUserData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const response = await fetch(`/api/users/${session.user.id}`);
+        const data = await response.json();
+        setUserData(data.data);
+      }
+    };
+    fetchUserData();
   }, []);
 
   const sections = [
@@ -71,23 +82,23 @@ const AccountSettings = () => {
                   <h2 className="text-2xl font-bold">Personal information</h2>
                   <div className="border-b border-gray-700 pb-4">
                     <p className="font-semibold">Legal name</p>
-                    <p className="text-gray-400">Prajnan Naik</p>
+                    <p className="text-gray-400">{userData?.full_name || 'Not provided'}</p>
                   </div>
                   <div className="border-b border-gray-700 pb-4">
                     <p className="font-semibold">Preferred first name</p>
-                    <p className="text-gray-400">Not provided</p>
+                    <p className="text-gray-400">{userData?.preferred_name || 'Not provided'}</p>
                   </div>
                   <div className="border-b border-gray-700 pb-4">
                     <p className="font-semibold">Email address</p>
-                    <p className="text-gray-400">p***7@gmail.com</p>
+                    <p className="text-gray-400">{userData?.email || 'Not provided'}</p>
                   </div>
                   <div className="border-b border-gray-700 pb-4">
                     <p className="font-semibold">Phone number</p>
-                    <p className="text-gray-400">+91 ***** *7034</p>
+                    <p className="text-gray-400">{userData?.phone || 'Not provided'}</p>
                   </div>
                   <div>
                     <p className="font-semibold">Identity verification</p>
-                    <p className="text-gray-400">Verified</p>
+                    <p className="text-gray-400">{userData?.identity_verified ? 'Verified' : 'Not verified'}</p>
                   </div>
                 </div>
               )}
