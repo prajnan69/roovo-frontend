@@ -9,7 +9,7 @@ import { User } from "@supabase/supabase-js";
 import { Spinner } from "./ui/shadcn-io/spinner";
 
 interface Message {
-  id: number;
+  id: number | string;
   sender_id: string;
   content: string;
   is_verified: boolean;
@@ -44,14 +44,39 @@ const Chat = ({ conversationId }: ChatProps) => {
     const channel = supabase
       .channel(`messages:${conversationId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, (payload) => {
-        setMessages((messages) => [...messages, payload.new as Message]);
+        const newMessage = payload.new as Message;
+        setMessages((prevMessages) => {
+          // Prevent duplicates by ID
+          if (prevMessages.some((msg) => msg.id === newMessage.id)) {
+            return prevMessages;
+          }
+
+          // Replace optimistic message
+          if (newMessage.sender_id === user?.id) {
+            const optimisticMessageIndex = prevMessages.findIndex(
+              (msg) =>
+                msg.status === "sending" && msg.content === newMessage.content
+            );
+
+            if (optimisticMessageIndex !== -1) {
+              const updatedMessages = [...prevMessages];
+              updatedMessages[optimisticMessageIndex] = {
+                ...newMessage,
+                status: "sent",
+              };
+              return updatedMessages;
+            }
+          }
+
+          return [...prevMessages, newMessage];
+        });
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [conversationId]);
+  }, [conversationId, user?.id]);
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,7 +85,7 @@ const Chat = ({ conversationId }: ChatProps) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    const tempId = Math.random();
+    const tempId = crypto.randomUUID();
     const newMessageObj = {
       id: tempId,
       sender_id: session.user.id,
@@ -69,24 +94,27 @@ const Chat = ({ conversationId }: ChatProps) => {
       status: 'sending',
     };
 
-    setMessages([...messages, newMessageObj as Message]);
+    setMessages((prevMessages) => [...prevMessages, newMessageObj as Message]);
     setNewMessage("");
 
-    const response = await fetch(`${API_BASE_URL}/api/chat/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        conversation_id: conversationId,
-        sender_id: session.user.id,
-        content: newMessage,
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversation_id: conversationId,
+          sender_id: session.user.id,
+          content: newMessage,
+        }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      setMessages(messages.map(msg => msg.id === tempId ? { ...data, status: 'sent' } : msg) as Message[]);
-    } else {
-      setMessages(messages.map(msg => msg.id === tempId ? { ...newMessageObj, status: 'failed' } : msg) as Message[]);
+      if (!response.ok) {
+        console.error('Failed to send message:', response);
+        setMessages(prevMessages => prevMessages.map(msg => msg.id === tempId ? { ...newMessageObj, status: 'failed' } : msg));
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages(prevMessages => prevMessages.map(msg => msg.id === tempId ? { ...newMessageObj, status: 'failed' } : msg) as Message[]);
     }
   };
 
@@ -95,10 +123,10 @@ const Chat = ({ conversationId }: ChatProps) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white rounded-lg">
+    <div className="flex flex-col h-full bg-gray-900 text-white rounded-lg scrollbar-hide">
       <div className="flex-1 p-4 overflow-y-auto flex flex-col-reverse">
         <div ref={messagesEndRef} />
-        {messages.slice().reverse().map((msg) => (
+        {Array.from(new Map(messages.map(msg => [msg.id, msg])).values()).slice().reverse().map((msg) => (
           <motion.div
             key={msg.id}
             initial={{ opacity: 0, y: 20 }}

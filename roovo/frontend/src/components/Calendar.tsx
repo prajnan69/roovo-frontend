@@ -1,19 +1,92 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchBookings, API_BASE_URL, getListingsByHostId, default as supabase } from "@/services/api";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+
+interface Booking {
+  id: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  guest_id: string;
+}
+
+interface Listing {
+  id: string;
+  title: string;
+  price_per_night: number;
+  weekend_price: number;
+  primary_image_url: string;
+}
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [price, setPrice] = useState(0);
+  const [weekendPrice, setWeekendPrice] = useState(0);
+  const [weekendPercentage, setWeekendPercentage] = useState(20);
+  const [isLoading, setIsLoading] = useState(true);
+  const [direction, setDirection] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const router = useRouter();
 
-  const bookings = [
-    { id: 1, date: new Date(2025, 10, 12), guest: "John Doe" },
-    { id: 2, date: new Date(2025, 10, 18), guest: "Jane Smith" },
-    { id: 3, date: new Date(2025, 11, 5), guest: "Peter Jones" },
-  ];
+  useEffect(() => {
+    const getListings = async () => {
+      setIsLoading(true);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.id) {
+          const hostId = session.user.id;
+          const data = await getListingsByHostId(hostId);
+          setListings(data);
+          if (data.length > 0) {
+            setSelectedListing(data[0]);
+            const basePrice = Number(data[0].price_per_night) || 0;
+            setPrice(basePrice);
+            const weekendPrice = Number(data[0].weekend_price) || basePrice * 1.2;
+            setWeekendPrice(weekendPrice);
+            if (basePrice > 0) {
+              setWeekendPercentage(Math.round(((weekendPrice / basePrice) - 1) * 100));
+            }
+          } else {
+            setIsLoading(false);
+          }
+        } else {
+          console.log("No active session or user ID found. Cannot fetch listings.");
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Failed to fetch listings:", error);
+        setIsLoading(false);
+      }
+    };
+
+    getListings();
+  }, []);
+
+  useEffect(() => {
+    const getBookings = async () => {
+      if (!selectedListing) return;
+      setIsLoading(true);
+      try {
+        const data = await fetchBookings(selectedListing.id);
+        setBookings(data);
+      } catch (error) {
+        console.error("Failed to fetch bookings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getBookings();
+  }, [selectedListing]);
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
@@ -27,80 +100,299 @@ const Calendar = () => {
   ).getDay();
 
   const goToPreviousMonth = () => {
+    setDirection(-1);
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
     );
   };
 
   const goToNextMonth = () => {
+    setDirection(1);
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
     );
   };
 
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.5 }
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0,
+      transition: { duration: 0.5 }
+    }),
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('ical', file);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/ical/import`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert('Calendar imported successfully');
+        // Refresh bookings
+        if (selectedListing) {
+          const data = await fetchBookings(selectedListing.id);
+          setBookings(data);
+        }
+      } else {
+        alert('Failed to import calendar');
+      }
+    } catch (error) {
+      console.error('Failed to import calendar:', error);
+      alert('Failed to import calendar');
+    }
+  };
+
+  const handlePriceSave = async () => {
+    if (!selectedListing) return;
+
+    setIsSaving(true);
+    setSaveSuccess(false);
+    const weekend_price = price * (1 + weekendPercentage / 100);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/listings/${selectedListing.id}/price`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          price_per_night: price,
+          weekend_price: weekend_price,
+        }),
+      });
+
+      if (response.ok) {
+        setWeekendPrice(weekend_price);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000); // Show success for 3 seconds
+      } else {
+        console.error('Failed to update price:', response.status, response.statusText);
+        // Optionally, show an error message to the user
+      }
+    } catch (error) {
+      console.error('Failed to update price:', error);
+      // Optionally, show an error message to the user
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex items-center mb-8">
-        <button onClick={() => router.back()} className="mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <h1 className="text-3xl font-bold">Calendar</h1>
-        <button className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg ml-auto">
-          Import Calendar
-        </button>
-      </div>
-      <div className="bg-gray-900 p-6 rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <button onClick={goToPreviousMonth}>
-            <ChevronLeft />
+    <div className="min-h-screen bg-black text-white p-8 flex gap-8 font-sans">
+      <div className="w-3/4">
+        <div className="flex items-center mb-8">
+          <button onClick={() => router.back()} className="mr-4 p-2 rounded-full hover:bg-gray-800 transition-colors">
+            <ChevronLeft className="h-6 w-6" />
           </button>
-          <h2 className="text-xl font-semibold">
-            {currentDate.toLocaleString("default", {
-              month: "long",
-              year: "numeric",
-            })}
-          </h2>
-          <button onClick={goToNextMonth}>
-            <ChevronRight />
-          </button>
+          <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
+          <div className="ml-auto flex gap-4">
+            <button
+              onClick={() => document.getElementById('ical-import')?.click()}
+              className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105"
+            >
+              Import
+            </button>
+            <input
+              type="file"
+              id="ical-import"
+              className="hidden"
+              accept=".ics"
+              onChange={handleImport}
+            />
+            <a
+              href={`${API_BASE_URL}/api/ical/export`}
+              download="bookings.ics"
+              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105"
+            >
+              Export
+            </a>
+          </div>
         </div>
-        <div className="grid grid-cols-7 gap-2 text-center">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day} className="font-semibold">
-              {day}
+        <div className="flex overflow-x-auto gap-2 mb-8 pb-2">
+          {listings.map((listing) => (
+            <button
+              key={listing.id}
+              className={`flex-shrink-0 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 text-sm font-semibold ${selectedListing?.id === listing.id ? 'bg-indigo-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'}`}
+              onClick={() => {
+                setSelectedListing(listing);
+                setPrice(Number(listing.price_per_night) || 0);
+                setWeekendPrice(Number(listing.weekend_price) || 0);
+              }}
+            >
+              {listing.title}
+            </button>
+          ))}
+        </div>
+        <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-white/20">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center">
+              <button onClick={goToPreviousMonth} className="p-2 rounded-full hover:bg-white/20 transition-colors">
+                <ChevronLeft />
+              </button>
+              <h2 className="text-2xl font-bold mx-4 tracking-wide">
+                {currentDate.toLocaleString("default", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </h2>
+              <button onClick={goToNextMonth} className="p-2 rounded-full hover:bg-white/20 transition-colors">
+                <ChevronRight />
+              </button>
             </div>
-          ))}
-          {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const day = i + 1;
-            const booking = bookings.find(
-              (b) =>
-                b.date.getDate() === day &&
-                b.date.getMonth() === currentDate.getMonth() &&
-                b.date.getFullYear() === currentDate.getFullYear()
-            );
-            return (
-              <div
-                key={day}
-                className={`p-2 rounded-lg ${
-                  booking ? "bg-indigo-500" : "bg-gray-800"
-                }`}
+          </div>
+          <div className="relative overflow-hidden">
+            <AnimatePresence initial={false} custom={direction}>
+              <motion.div
+                key={currentDate.toString()}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="grid grid-cols-7 gap-2 text-center"
               >
-                {day}
-                {booking && (
-                  <p className="text-xs mt-1">{booking.guest}</p>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                  <div key={day} className="font-semibold text-gray-300 text-sm uppercase tracking-wider">
+                    {day}
+                  </div>
+                ))}
+                {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                  <div key={`empty-${i}`} />
+                ))}
+                {isLoading ? (
+                  <div className="col-span-7 flex justify-center items-center h-64">
+                    <Spinner />
+                  </div>
+                ) : (
+                  Array.from({ length: daysInMonth }).map((_, i) => {
+                    const day = i + 1;
+                    const date = new Date(
+                      currentDate.getFullYear(),
+                      currentDate.getMonth(),
+                      day
+                    );
+                    const booking = bookings.find((b) => {
+                      const startDate = new Date(b.start_date);
+                      const endDate = new Date(b.end_date);
+                      return date >= startDate && date <= endDate;
+                    });
+
+                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    const dayPrice = isWeekend ? weekendPrice : price;
+
+                    const getStatusColor = (status: string) => {
+                      switch (status) {
+                        case "confirmed":
+                          return "bg-red-600 text-white";
+                        case "pending":
+                          return "bg-yellow-500 text-black";
+                        case "completed":
+                          return "bg-gray-700 text-white";
+                        default:
+                          return "bg-white/10";
+                      }
+                    };
+
+                    return (
+                      <div
+                        key={day}
+                        className={`p-2 rounded-lg transition-all duration-300 ${
+                          booking ? getStatusColor(booking.status) : "bg-green-600/30 hover:bg-green-600/50"
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <span className="font-bold text-lg">{day}</span>
+                          <span className="text-xs font-mono bg-black/20 px-2 py-1 rounded-full">
+                            ₹{dayPrice?.toFixed(0)}
+                          </span>
+                        </div>
+                        {booking && (
+                          <p className={`text-xs mt-2 truncate ${booking.status === 'pending' ? 'text-black/80' : 'text-white/80'}`}>
+                            {booking.guest_id}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
-              </div>
-            );
-          })}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
+      </div>
+      <div className="w-1/4 bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-white/20 flex flex-col">
+        {selectedListing && (
+          <div className="mb-6">
+            <img src={selectedListing.primary_image_url} alt={selectedListing.title} className="w-full h-32 object-cover rounded-xl mb-4" />
+            <h2 className="text-xl font-bold tracking-tight truncate">{selectedListing.title}</h2>
+          </div>
+        )}
+        <div className="flex-grow">
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-medium text-gray-300">Base Price (per night)</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">₹</span>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className="w-full bg-white/10 rounded-full p-3 pl-8 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-medium text-gray-300">Weekend Price Increase</label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={weekendPercentage}
+                onChange={(e) => setWeekendPercentage(Number(e.target.value))}
+                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+              />
+              <span className="text-lg font-semibold w-16 text-center">{weekendPercentage}%</span>
+            </div>
+            <div className="text-right mt-2 text-gray-400 text-sm">
+              Weekend: <span className="font-bold text-white">₹{(price * (1 + weekendPercentage / 100)).toFixed(0)}</span>
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={handlePriceSave}
+          className={`bg-indigo-500 text-white font-bold py-3 px-4 rounded-full w-full transition-all duration-300 mt-auto flex items-center justify-center
+            ${isSaving ? 'opacity-70 cursor-not-allowed' : 'hover:bg-indigo-600 hover:scale-105'}
+            ${saveSuccess ? 'bg-green-500' : ''}
+          `}
+          disabled={isSaving}
+        >
+          {isSaving ? (
+            <Spinner className="h-5 w-5 text-white" />
+          ) : saveSuccess ? (
+            'Saved!'
+          ) : (
+            'Save Prices'
+          )}
+        </button>
       </div>
     </div>
   );
 };
-
 export default Calendar;

@@ -47,9 +47,9 @@ const UserMessagesPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-black p-6 pt-8 overflow-hidden">
+    <div className="flex flex-col h-screen bg-white text-black p-6 pt-8 scrollbar-hide">
       {/* Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 h-[calc(100vh-10rem)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 flex-grow">
         
         {/* Conversation List */}
         <motion.div
@@ -90,7 +90,7 @@ const UserMessagesPage = () => {
                         alt="Listing"
                         width={48}
                         height={48}
-                        className="rounded-lg"
+                        className="rounded-lg w-12 h-12 object-cover"
                       />
                       {/* unread pulse */}
                       <motion.span
@@ -100,7 +100,7 @@ const UserMessagesPage = () => {
                       ></motion.span>
                     </motion.div>
 
-                    <span className="text-sm">{convo.host?.name || 'Host'}</span>
+                    <span className="text-sm">{convo.listing?.host?.name || 'Host'}</span>
                   </motion.div>
                 );
               })}
@@ -114,6 +114,12 @@ const UserMessagesPage = () => {
             <div
               className="col-span-1 md:col-span-2 h-full bg-white rounded-xl border border-gray-200 shadow-xl shadow-black/10 overflow-hidden"
             >
+              <div className="p-4 border-b border-gray-200">
+                <div>
+                  <h2 className="text-lg font-bold">{selectedConversation.listing.title}</h2>
+                  <p className="text-sm text-gray-500">{selectedConversation.listing.property_type}</p>
+                </div>
+              </div>
               <GuestChat conversationId={selectedConversation.id} />
             </div>
           )}

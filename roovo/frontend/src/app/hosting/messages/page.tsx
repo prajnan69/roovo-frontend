@@ -148,7 +148,7 @@ const MessagesPage = () => {
                         alt="Listing"
                         width={48}
                         height={48}
-                        className="rounded-lg"
+                        className="rounded-lg w-12 h-12 object-cover"
                       />
                       {/* unread pulse */}
                       <motion.span
@@ -172,6 +172,21 @@ const MessagesPage = () => {
             <div
               className="col-span-1 md:col-span-2 h-full bg-gray-950/60 rounded-xl border border-white/5 shadow-xl shadow-black/30 overflow-hidden"
             >
+              <div className="p-4 border-b border-gray-800 sticky top-0 bg-gray-950/60 backdrop-blur-xl z-10">
+                <div className="flex items-center">
+                  <Image
+                    src={selectedConversation.listing.primary_image_url ?? "/placeholder.svg"}
+                    alt="Listing"
+                    width={64}
+                    height={64}
+                    className="rounded-lg w-16 h-16 object-cover"
+                  />
+                  <div className="ml-4">
+                    <h2 className="text-lg font-bold">{selectedConversation.listing.title}</h2>
+                    <p className="text-sm text-gray-400">{selectedConversation.listing.property_type}</p>
+                  </div>
+                </div>
+              </div>
               <Chat conversationId={selectedConversation.id} />
             </div>
           )}

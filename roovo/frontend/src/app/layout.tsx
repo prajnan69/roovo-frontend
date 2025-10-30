@@ -188,7 +188,7 @@ export default function RootLayout({
 
               <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md">
                 <AnimatePresence>
-                  {isScrolled && pathname !== '/messages' && (
+                  {isScrolled && pathname !== '/messages' && !pathname.startsWith('/listing/') && (
                     <ModernSearchBar
                       showSlidingText={!pathname.startsWith('/listing/')}
                       isCollapsed={isScrolled}
@@ -234,7 +234,7 @@ export default function RootLayout({
             </div>
 
             <AnimatePresence>
-              {!isScrolled && pathname !== '/messages' && (
+              {!isScrolled && pathname !== '/messages' && !pathname.startsWith('/listing/') && (
                 <motion.div
                   className=""
                   initial={{ height: 0, opacity: 0 }}

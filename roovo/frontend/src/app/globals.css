@@ -279,3 +279,12 @@ t
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .backdrop-blur-lg {
+    backdrop-filter: blur(16px);
+  }
+  .rounded-full {
+    border-radius: 9999px;
+  }
+}

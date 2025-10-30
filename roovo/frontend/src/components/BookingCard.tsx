@@ -9,26 +9,40 @@ import { useRouter } from 'next/navigation';
 import supabase from '@/services/api';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { API_BASE_URL } from '@/services/api';
-const BookingCard = ({ price, max_guests, host_id, listing_id }: { price: number, max_guests: number, host_id: string, listing_id: number }) => {
+
+interface BookingCardProps {
+  price: number;
+  max_guests: number;
+  host_id: string;
+  listing_id: number;
+  onReserveClick: (bookingDetails: any, priceDetails: any) => void;
+  checkInDate: Date | null;
+  checkOutDate: Date | null;
+  onDateSelect: (date: Date) => void;
+}
+
+const BookingCard = ({ 
+  price, 
+  max_guests, 
+  host_id, 
+  listing_id, 
+  onReserveClick,
+  checkInDate,
+  checkOutDate,
+  onDateSelect
+}: BookingCardProps) => {
   const router = useRouter();
   const [guests, setGuests] = useState(1);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showGuests, setShowGuests] = useState(false);
-  const [checkInDate, setCheckInDate] = useState<Date | null>(null);
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleDateSelect = (date: Date) => {
-    if (!checkInDate || (checkInDate && checkOutDate)) {
-      setCheckInDate(date);
-      setCheckOutDate(null);
-    } else if (date > checkInDate) {
-      setCheckOutDate(date);
+    onDateSelect(date);
+    if (checkInDate && date > checkInDate) {
       setShowCalendar(false);
-    } else {
-      setCheckInDate(date);
     }
   };
 
@@ -37,6 +51,34 @@ const BookingCard = ({ price, max_guests, host_id, listing_id }: { price: number
 
   const guestsRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(guestsRef, () => setShowGuests(false));
+
+  const numberOfNights = checkInDate && checkOutDate
+    ? Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+  const totalPrice = numberOfNights * price;
+  const taxes = totalPrice * 0.05; // Example 5% tax
+
+  const handleReserve = () => {
+    if (!checkInDate || !checkOutDate || guests === 0) {
+      alert('Please select dates and number of guests.');
+      return;
+    }
+
+    const bookingDetails = {
+      startDate: checkInDate.toISOString(),
+      endDate: checkOutDate.toISOString(),
+      guests,
+      nights: numberOfNights,
+    };
+
+    const priceDetails = {
+      pricePerNight: price,
+      totalPrice,
+      taxes,
+    };
+
+    onReserveClick(bookingDetails, priceDetails);
+  };
 
   return (
     <motion.div
@@ -69,7 +111,7 @@ const BookingCard = ({ price, max_guests, host_id, listing_id }: { price: number
               exit={{ opacity: 0, y: -10 }}
               className="absolute z-10 top-full mt-2"
             >
-              <DatePicker onSelect={handleDateSelect} checkIn={checkInDate} checkOut={checkOutDate} />
+              <DatePicker onSelect={onDateSelect} checkIn={checkInDate} checkOut={checkOutDate} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -107,7 +149,10 @@ const BookingCard = ({ price, max_guests, host_id, listing_id }: { price: number
           </AnimatePresence>
         </div>
       </div>
-      <button className=" cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+      <button
+        onClick={handleReserve}
+        className="cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+      >
         Reserve
       </button>
       <AnimatePresence>
@@ -176,5 +221,4 @@ const BookingCard = ({ price, max_guests, host_id, listing_id }: { price: number
     </motion.div>
   );
 };
-
 export default BookingCard;

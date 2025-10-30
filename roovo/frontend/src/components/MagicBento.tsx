@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { useRouter } from 'next/navigation';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 export interface BentoCardProps {
   color?: string;
@@ -499,10 +500,12 @@ const MagicBento: React.FC<BentoProps> = ({
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
+  const [clickedCardIndex, setClickedCardIndex] = useState<number | null>(null);
   const shouldDisableAnimations = disableAnimations || isMobile;
   const router = useRouter();
 
-  const handleCardClick = (url?: string) => {
+  const handleCardClick = (url: string | undefined, index: number) => {
+    setClickedCardIndex(index);
     if (url) {
       router.push(url);
     }
@@ -650,7 +653,7 @@ const MagicBento: React.FC<BentoProps> = ({
       <BentoCardGrid gridRef={gridRef}>
         <div className="card-responsive grid gap-2">
           {cardData.map((card, index) => {
-            const baseClassName = `card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[20px] border border-solid font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] ${
+            const baseClassName = `card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[20px] border border-solid font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] cursor-pointer ${
               enableBorderGlow ? 'card--border-glow' : ''
             }`;
 
@@ -676,10 +679,11 @@ const MagicBento: React.FC<BentoProps> = ({
                   enableTilt={enableTilt}
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
-                  onClick={() => handleCardClick(card.url)}
+                  onClick={() => handleCardClick(card.url, index)}
                 >
                   <div className="card__header flex justify-between gap-3 relative text-white">
                     <span className="card__label text-base font-bold">{card.label}</span>
+                    {clickedCardIndex === index && <Spinner />}
                   </div>
                   <div className="card__content flex flex-col relative text-white">
                     <h3 className={`card__title font-normal text-base m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''}`}>
@@ -809,10 +813,11 @@ const MagicBento: React.FC<BentoProps> = ({
                   el.addEventListener('mouseleave', handleMouseLeave);
                   el.addEventListener('click', handleClick);
                 }}
-                onClick={() => handleCardClick(card.url)}
+                onClick={() => handleCardClick(card.url, index)}
               >
                 <div className="card__header flex justify-between gap-3 relative text-white">
                   <span className="card__label text-base">{card.label}</span>
+                  {clickedCardIndex === index && <Spinner />}
                 </div>
                 <div className="card__content flex flex-col relative text-white">
                   <h3 className={`card__title font-normal text-base m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''}`}>

@@ -16,6 +16,7 @@ import { ChevronDown, XCircle, Share, Heart, ArrowLeft, Star } from 'lucide-reac
 import MobileImageCarousel from '@/components/MobileImageCarousel';
 import BookingBar from '@/components/BookingBar';
 import BookingCard from '@/components/BookingCard';
+import ConfirmAndPay from '@/components/ConfirmAndPay';
 import { useRouter } from 'next/navigation';
 
 const imageContainerVariants = {
@@ -58,6 +59,11 @@ const ListingDetailsPage = () => {
   const [showGallery, setShowGallery] = useState(false);
   const [showNotIncluded, setShowNotIncluded] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [showConfirmAndPay, setShowConfirmAndPay] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
+  const [priceDetails, setPriceDetails] = useState<any>(null);
+  const [checkInDate, setCheckInDate] = useState<Date | null>(null);
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -118,27 +124,82 @@ const ListingDetailsPage = () => {
     return <div>Listing not found.</div>;
   }
 
+  const handleReserveClick = (bookingDetails: any, priceDetails: any) => {
+    setBookingDetails(bookingDetails);
+    setPriceDetails(priceDetails);
+    setShowConfirmAndPay(true);
+  };
+
+  const handleBackFromConfirmAndPay = () => {
+    setShowConfirmAndPay(false);
+  };
+
+  const handleDateSelect = (date: Date) => {
+    if (!checkInDate || (checkInDate && checkOutDate)) {
+      setCheckInDate(date);
+      setCheckOutDate(null);
+    } else if (date > checkInDate) {
+      setCheckOutDate(date);
+    } else {
+      setCheckInDate(date);
+    }
+  };
+
+  if (showConfirmAndPay && bookingDetails && priceDetails) {
+    return (
+      <ConfirmAndPay
+        listing={{
+          id: String(listing.id),
+          title: listing.title,
+          primary_image_url: listing.primary_image_url ?? '',
+          overall_rating: listing.overall_rating ?? 0,
+          total_reviews: listing.total_reviews ?? 0,
+          cancellation_policy: listing.cancellation_policy ?? 'No cancellation policy provided.',
+        }}
+        bookingDetails={bookingDetails}
+        priceDetails={priceDetails}
+        onBack={handleBackFromConfirmAndPay}
+        host_id={listing.host_id}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
-      {isMobile ? (
+      {showConfirmAndPay && bookingDetails && priceDetails ? (
+        <ConfirmAndPay
+          listing={{
+            id: String(listing.id),
+            title: listing.title,
+            primary_image_url: listing.primary_image_url ?? '',
+            overall_rating: listing.overall_rating ?? 0,
+            total_reviews: listing.total_reviews ?? 0,
+            cancellation_policy: listing.cancellation_policy ?? 'No cancellation policy provided.',
+          }}
+          bookingDetails={bookingDetails}
+          priceDetails={priceDetails}
+          onBack={handleBackFromConfirmAndPay}
+          host_id={listing.host_id}
+        />
+      ) : isMobile ? (
         <>
           <div className="bg-gray-100">
-          <div className="relative h-[40vh]">
-            <MobileImageCarousel images={listing.all_image_urls?.map((img: any) => img.url) || []} />
-            <div className="absolute top-4 left-4 z-10">
-              <button onClick={() => router.back()} className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
-                <ArrowLeft className="w-5 h-5 text-gray-800" />
-              </button>
+            <div className="relative h-[40vh]">
+              <MobileImageCarousel images={listing.all_image_urls?.map((img: any) => img.url) || []} />
+              <div className="absolute top-4 left-4 z-10">
+                <button onClick={() => router.back()} className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
+                  <ArrowLeft className="w-5 h-5 text-gray-800" />
+                </button>
+              </div>
+              <div className="absolute top-4 right-4 flex space-x-2 z-10">
+                <button className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
+                  <Share className="w-5 h-5 text-gray-800" />
+                </button>
+                <button className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
+                  <Heart className="w-5 h-5 text-gray-800" />
+                </button>
+              </div>
             </div>
-            <div className="absolute top-4 right-4 flex space-x-2 z-10">
-              <button className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
-                <Share className="w-5 h-5 text-gray-800" />
-              </button>
-              <button className="bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-md">
-                <Heart className="w-5 h-5 text-gray-800" />
-              </button>
-            </div>
-          </div>
             <div className="bg-white rounded-t-2xl -mt-8 p-6 relative z-10 pb-24">
               <motion.h1 {...fadeInUp(0.1)} className="text-2xl font-bold tracking-tight text-gray-900 font-montserrat">
                 {listing.title}
@@ -167,7 +228,7 @@ const ListingDetailsPage = () => {
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.5)}>
-{listing.sleeping_arrangements && <SleepingArrangements arrangements={listing.sleeping_arrangements} />}
+                {listing.sleeping_arrangements && <SleepingArrangements arrangements={listing.sleeping_arrangements} />}
               </motion.div>
               <div className="border-t border-gray-200 my-6" />
               <motion.div {...fadeInUp(0.6)}>
@@ -224,7 +285,7 @@ const ListingDetailsPage = () => {
         </>
       ) : (
         <div className="mx-auto max-w-7xl py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
-      {showGallery && (
+          {showGallery && (
             <CircularGallery
               items={listing.all_image_urls?.map((img: any) => ({
                 image: img.url,
@@ -363,7 +424,16 @@ const ListingDetailsPage = () => {
             </motion.div>
           </div>
           <div className="hidden lg:block lg:col-span-1">
-            <BookingCard price={listing.price_per_night ?? 0} max_guests={listing.max_guests || 0} host_id={String(listing.host_id)} listing_id={listing.id} />
+            <BookingCard 
+              price={Number(listing.price_per_night) ?? 0} 
+              max_guests={listing.max_guests || 0} 
+              host_id={listing.host_id} 
+              listing_id={listing.id} 
+              onReserveClick={handleReserveClick}
+              checkInDate={checkInDate}
+              checkOutDate={checkOutDate}
+              onDateSelect={handleDateSelect}
+            />
           </div>
         </div>
         </div>

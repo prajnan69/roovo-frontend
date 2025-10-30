@@ -72,23 +72,28 @@ const GuestChat = ({ conversationId }: GuestChatProps) => {
     setMessages([...messages, newMessageObj as Message]);
     setNewMessage("");
 
-    const response = await fetch(`${API_BASE_URL}/api/chat/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        conversation_id: conversationId,
-        sender_id: session.user.id,
-        content: newMessage,
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversation_id: conversationId,
+          sender_id: session.user.id,
+          content: newMessage,
+        }),
+      });
 
     if (response.ok) {
       const data = await response.json();
       console.log('Message sent successfully:', data);
-      setMessages(messages.map(msg => msg.id === tempId ? { ...data, status: 'sent' } : msg) as Message[]);
+      setMessages(prevMessages => prevMessages.map(msg => msg.id === tempId ? { ...data, status: 'sent' } : msg));
     } else {
       console.error('Failed to send message:', response);
-      setMessages(messages.map(msg => msg.id === tempId ? { ...newMessageObj, status: 'failed' } : msg) as Message[]);
+      setMessages(prevMessages => prevMessages.map(msg => msg.id === tempId ? { ...newMessageObj, status: 'failed' } : msg));
+    }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages(prevMessages => prevMessages.map(msg => msg.id === tempId ? { ...newMessageObj, status: 'failed' } : msg) as Message[]);
     }
   };
 

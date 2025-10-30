@@ -34,12 +34,27 @@ export const fetchListingById = async (id: string) => {
 };
 
 export const getListingsByHostId = async (hostId: string) => {
+  console.log(`Fetching listings for host ID: ${hostId}`);
   const response = await fetch(`${API_BASE_URL}/api/listings/host/${hostId}`);
   if (!response.ok) {
+    console.error('Failed to fetch listings by host ID:', response.status, response.statusText);
     throw new Error('Failed to fetch listings by host ID');
   }
   const result = await response.json();
+  console.log('Listings data:', result.data);
   return result.data;
+};
+
+export const fetchBookings = async (listingId?: string) => {
+  let url = `${API_BASE_URL}/api/bookings`;
+  if (listingId) {
+    url += `?listing_id=${listingId}`;
+  }
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch bookings');
+  }
+  return response.json();
 };
 
 export default supabase;

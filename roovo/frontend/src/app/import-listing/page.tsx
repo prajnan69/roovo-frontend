@@ -68,6 +68,9 @@ const ImportListingPage = () => {
 
         const { jobId } = await response.json();
 
+        const { data: { session } } = await supabase.auth.getSession();
+        const user_id = session?.user?.id;
+
         const interval = setInterval(async () => {
           const statusResponse = await fetch(`${API_BASE_URL}/api/scrape/status/${jobId}`);
           const { status, data } = await statusResponse.json();
@@ -87,8 +90,12 @@ const ImportListingPage = () => {
               break;
             case "completed":
               clearInterval(interval);
+              if (!user_id) {
+                throw new Error("User is not logged in.");
+              }
               const transformedData: ListingData = {
                 id: data.id,
+                host_id: user_id,
                 title: data.title,
                 property_type: data.propertyDetails?.propertyType,
                 propertyDetails: data.propertyDetails,

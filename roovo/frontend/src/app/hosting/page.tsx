@@ -34,12 +34,10 @@ const HostingPage = () => {
 
   useEffect(() => {
     const cameFromHosting = sessionStorage.getItem('fromHosting');
+    console.log('cameFromHosting:', cameFromHosting, 'initialLoad:', initialLoad);
     if (cameFromHosting) {
-      setIsHost(true);
       setInitialLoad(false);
       sessionStorage.removeItem('fromHosting');
-    } else {
-      setInitialLoad(true);
     }
 
     const checkUser = async () => {
@@ -94,48 +92,59 @@ const HostingPage = () => {
   }
 
   if (isHost) {
+    const handleNavigation = (url: string) => {
+      sessionStorage.setItem('fromHosting', 'true');
+      router.push(url);
+    };
+
     const cardData = [
       {
         color: '#060010',
         title: 'Today',
         description: 'View your reservations for today',
         label: 'Reservations',
-        url: '/hosting/reservations'
+        url: '/hosting/reservations',
+        onClick: () => handleNavigation('/hosting/reservations')
       },
       {
         color: '#060010',
         title: 'Calendar',
         description: 'Manage your availability',
         label: 'Planning',
-        url: '/hosting/calendar'
+        url: '/hosting/calendar',
+        onClick: () => handleNavigation('/hosting/calendar')
       },
       {
         color: '#060010',
         title: 'Listings',
         description: 'Manage your properties',
         label: 'Properties',
-        url: '/hosting/manage-listings'
+        url: '/hosting/manage-listings',
+        onClick: () => handleNavigation('/hosting/manage-listings')
       },
       {
         color: '#060010',
         title: 'Messages',
         description: 'Communicate with your guests',
         label: 'Communication',
-        url: '/hosting/messages'
+        url: '/hosting/messages',
+        onClick: () => handleNavigation('/hosting/messages')
       },
       {
         color: '#060010',
         title: 'Account Settings',
         description: 'Manage your account details',
         label: 'Settings',
-        url: '/hosting/account-settings'
+        url: '/hosting/account-settings',
+        onClick: () => handleNavigation('/hosting/account-settings')
       },
       {
         color: '#060010',
         title: 'Create New Listing',
         description: 'Add a new property to your portfolio',
         label: 'New',
-        url: '/hosting/new-listing'
+        url: '/hosting/new-listing',
+        onClick: () => handleNavigation('/hosting/new-listing')
       }
     ];
 
@@ -179,7 +188,10 @@ const HostingPage = () => {
               spotlightRadius={300}
               particleCount={12}
               glowColor="132, 0, 255"
-              cardData={cardData}
+              cardData={cardData.map(card => ({
+                ...card,
+                onClick: () => handleNavigation(card.url)
+              }))}
             />
           </motion.div>
         </div>

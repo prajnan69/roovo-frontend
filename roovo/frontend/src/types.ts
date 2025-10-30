@@ -1,6 +1,6 @@
 export interface ListingData {
   id: number;
-  host_id?: string;
+  host_id: string;
   title: string;
   description?: string;
   primary_image_url?: string;
@@ -95,6 +95,8 @@ export interface ListingData {
   total_bathrooms?: number;
   max_guests: number;
   overall_rating?: number;
+  total_reviews?: number; // Added for ConfirmAndPay component
+  cancellation_policy?: string; // Added for ConfirmAndPay component
   the_space?: string;
   sleeping_arrangements?: {
     room: string;

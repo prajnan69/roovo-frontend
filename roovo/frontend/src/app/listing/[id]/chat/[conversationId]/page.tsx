@@ -15,8 +15,8 @@ const UserChatPage = ({ params }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex items-center mb-8">
+    <div className="flex flex-col h-screen bg-black text-white p-8">
+      <div className="flex items-center mb-8 flex-shrink-0">
         <button onClick={handleBackNavigation} className="mr-4" disabled={isNavigatingBack}>
           {isNavigatingBack ? (
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
@@ -36,7 +36,7 @@ const UserChatPage = ({ params }: any) => {
         </motion.h1>
       </div>
 
-      <div className="h-[calc(100vh-12rem)]">
+      <div className="flex-grow">
         <Chat conversationId={Number(params.conversationId)} />
       </div>
     </div>
