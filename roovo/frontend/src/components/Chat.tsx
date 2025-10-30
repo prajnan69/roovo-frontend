@@ -24,6 +24,7 @@ const Chat = ({ conversationId }: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState<User | null>(null);
+  const [hostName, setHostName] = useState('Host');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,12 +35,26 @@ const Chat = ({ conversationId }: ChatProps) => {
       }
     };
     getUser();
-    const fetchMessages = async () => {
-      const response = await fetch(`${API_BASE_URL}/api/chat/messages/${conversationId}`);
-      const data = await response.json();
-      setMessages(data);
+
+    const fetchChatData = async () => {
+      // Fetch conversation details to get host_id
+      const convResponse = await fetch(`${API_BASE_URL}/api/chat/conversation/${conversationId}`);
+      const convData = await convResponse.json();
+      console.log('Conversation data:', convData);
+      const hostId = convData.host_id;
+
+      // Fetch host's name
+      const userResponse = await fetch(`${API_BASE_URL}/api/users/${hostId}`);
+      const userData = await userResponse.json();
+      console.log('User data:', userData);
+      setHostName(userData.data.name);
+
+      // Fetch messages
+      const messagesResponse = await fetch(`${API_BASE_URL}/api/chat/messages/${conversationId}`);
+      const messagesData = await messagesResponse.json();
+      setMessages(messagesData);
     };
-    fetchMessages();
+    fetchChatData();
 
     const channel = supabase
       .channel(`messages:${conversationId}`)
@@ -124,6 +139,9 @@ const Chat = ({ conversationId }: ChatProps) => {
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white rounded-lg scrollbar-hide">
+      <div className="p-4 border-b border-gray-800">
+        <h2 className="text-lg font-bold">{hostName}</h2>
+      </div>
       <div className="flex-1 p-4 overflow-y-auto flex flex-col-reverse">
         <div ref={messagesEndRef} />
         {Array.from(new Map(messages.map(msg => [msg.id, msg])).values()).slice().reverse().map((msg) => (

@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { fetchBookings, API_BASE_URL, getListingsByHostId, default as supabase } from "@/services/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import BackButton from "./BackButton";
 
 interface Booking {
   id: string;
@@ -26,6 +27,7 @@ interface Listing {
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [guestNames, setGuestNames] = useState<Record<string, string>>({});
   const [listings, setListings] = useState<Listing[]>([]);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [price, setPrice] = useState(0);
@@ -72,20 +74,44 @@ const Calendar = () => {
   }, []);
 
   useEffect(() => {
-    const getBookings = async () => {
+    const getBookingsAndGuests = async () => {
       if (!selectedListing) return;
       setIsLoading(true);
       try {
-        const data = await fetchBookings(selectedListing.id);
-        setBookings(data);
+        const bookingsData = await fetchBookings(selectedListing.id);
+        setBookings(bookingsData);
+
+        if (bookingsData && bookingsData.length > 0) {
+          const guestIds = [...new Set(bookingsData.map((b: Booking) => b.guest_id))];
+          const response = await fetch(`${API_BASE_URL}/api/users/by-ids`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ids: guestIds }),
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.text();
+            console.error('Failed to fetch guest names:', response.status, response.statusText, errorBody);
+            throw new Error('Failed to fetch guest names');
+          }
+
+          const { data: users } = await response.json();
+          const namesMap = users.reduce((acc: Record<string, string>, user: { id: string; name: string }) => {
+            acc[user.id] = user.name;
+            return acc;
+          }, {});
+          setGuestNames(namesMap);
+        }
       } catch (error) {
-        console.error("Failed to fetch bookings:", error);
+        console.error("Failed to fetch bookings or guest names:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    getBookings();
+    getBookingsAndGuests();
   }, [selectedListing]);
 
   const daysInMonth = new Date(
@@ -198,9 +224,7 @@ const Calendar = () => {
     <div className="min-h-screen bg-black text-white p-8 flex gap-8 font-sans">
       <div className="w-3/4">
         <div className="flex items-center mb-8">
-          <button onClick={() => router.back()} className="mr-4 p-2 rounded-full hover:bg-gray-800 transition-colors">
-            <ChevronLeft className="h-6 w-6" />
-          </button>
+          <BackButton variant="dark" />
           <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
           <div className="ml-auto flex gap-4">
             <button
@@ -216,13 +240,15 @@ const Calendar = () => {
               accept=".ics"
               onChange={handleImport}
             />
-            <a
-              href={`${API_BASE_URL}/api/ical/export`}
-              download="bookings.ics"
-              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105"
-            >
-              Export
-            </a>
+            {selectedListing && (
+              <a
+                href={`${API_BASE_URL}/api/ical/export/${selectedListing.id}`}
+                download={`${selectedListing.title.replace(/\s+/g, '_')}_calendar.ics`}
+                className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105"
+              >
+                Export
+              </a>
+            )}
           </div>
         </div>
         <div className="flex overflow-x-auto gap-2 mb-8 pb-2">
@@ -325,7 +351,7 @@ const Calendar = () => {
                         </div>
                         {booking && (
                           <p className={`text-xs mt-2 truncate ${booking.status === 'pending' ? 'text-black/80' : 'text-white/80'}`}>
-                            {booking.guest_id}
+                            {guestNames[booking.guest_id] || 'Guest'}
                           </p>
                         )}
                       </div>

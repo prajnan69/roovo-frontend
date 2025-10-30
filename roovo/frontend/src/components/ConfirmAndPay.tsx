@@ -3,6 +3,8 @@
 import { ArrowLeft, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import supabase from "@/services/api";
 import { API_BASE_URL } from "@/services/api";
 interface ConfirmAndPayProps {
@@ -27,12 +29,18 @@ interface ConfirmAndPayProps {
   };
   onBack: () => void;
   host_id: string;
+  auto_bookable?: boolean;
 }
 
-const ConfirmAndPay = ({ listing, bookingDetails, priceDetails, onBack, host_id }: ConfirmAndPayProps) => {
+const ConfirmAndPay = ({ listing, bookingDetails, priceDetails, onBack, host_id, auto_bookable }: ConfirmAndPayProps) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [bookingStatus, setBookingStatus] = useState<'idle' | 'loading' | 'confirmed' | 'pending'>('idle');
+
 
   const handleBooking = async () => {
+    setIsLoading(true);
+    setBookingStatus('loading');
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       // or show a login modal
@@ -47,11 +55,15 @@ const ConfirmAndPay = ({ listing, bookingDetails, priceDetails, onBack, host_id 
       start_date: bookingDetails.startDate,
       end_date: bookingDetails.endDate,
       total_price: priceDetails.totalPrice + priceDetails.taxes,
+      auto_bookable,
     };
 
     console.log('Booking Data:', bookingData);
 
     try {
+      // Simulate a 5-second delay
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
       const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: {
@@ -65,10 +77,15 @@ const ConfirmAndPay = ({ listing, bookingDetails, priceDetails, onBack, host_id 
         throw new Error(errorData.error || 'Failed to create booking');
       }
 
-      // Redirect to reservations page or show a success message
-      router.push('/hosting/reservations');
+      if (auto_bookable) {
+        setBookingStatus('confirmed');
+      } else {
+        setBookingStatus('pending');
+      }
     } catch (error) {
       console.error('Error creating booking:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,11 +115,15 @@ const ConfirmAndPay = ({ listing, bookingDetails, priceDetails, onBack, host_id 
               <a href="#" className="text-indigo-600 hover:underline">booking terms</a>.
             </p>
 
-            <button 
+            <button
               onClick={handleBooking}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+              disabled={isLoading || bookingStatus !== 'idle'}
             >
-              Continue to Razorpay
+              {bookingStatus === 'loading' && <Spinner />}
+              {bookingStatus === 'idle' && 'Continue to Razorpay'}
+              {bookingStatus === 'confirmed' && 'Booking Confirmed'}
+              {bookingStatus === 'pending' && 'Request to Book Sent'}
             </button>
           </div>
 

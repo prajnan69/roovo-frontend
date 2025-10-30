@@ -18,6 +18,7 @@ import BookingBar from '@/components/BookingBar';
 import BookingCard from '@/components/BookingCard';
 import ConfirmAndPay from '@/components/ConfirmAndPay';
 import { useRouter } from 'next/navigation';
+import supabase from '@/services/api';
 
 const imageContainerVariants = {
   hidden: { opacity: 0 },
@@ -64,6 +65,7 @@ const ListingDetailsPage = () => {
   const [priceDetails, setPriceDetails] = useState<any>(null);
   const [checkInDate, setCheckInDate] = useState<Date | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
+  const [isCurrentUserHost, setIsCurrentUserHost] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -97,6 +99,11 @@ const ListingDetailsPage = () => {
           const data = await fetchListingById(id);
           console.log('Received listing data:', data);
           setListing(data);
+
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && data.host_id === session.user.id) {
+            setIsCurrentUserHost(true);
+          }
         } catch (err) {
           console.error('Error fetching listing details:', err);
           setError('Failed to fetch listing details.');
@@ -160,6 +167,7 @@ const ListingDetailsPage = () => {
         priceDetails={priceDetails}
         onBack={handleBackFromConfirmAndPay}
         host_id={listing.host_id}
+        auto_bookable={listing.auto_bookable}
       />
     );
   }
@@ -180,6 +188,7 @@ const ListingDetailsPage = () => {
           priceDetails={priceDetails}
           onBack={handleBackFromConfirmAndPay}
           host_id={listing.host_id}
+          auto_bookable={listing.auto_bookable}
         />
       ) : isMobile ? (
         <>
@@ -433,6 +442,7 @@ const ListingDetailsPage = () => {
               checkInDate={checkInDate}
               checkOutDate={checkOutDate}
               onDateSelect={handleDateSelect}
+              disabled={isCurrentUserHost}
             />
           </div>
         </div>

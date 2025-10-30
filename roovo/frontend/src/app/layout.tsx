@@ -13,6 +13,8 @@ import BecomeAHost from "@/components/BecomeAHost";
 import Image from "next/image";
 import Link from "next/link";
 import supabase from '@/services/api';
+import WordRotate from "@/components/ui/word-rotate";
+import Notifications from "@/components/Notifications";
 
 const inter = Inter({
 variable: "--font-inter",
@@ -183,12 +185,20 @@ export default function RootLayout({
           <div className="mx-auto">
             <div className="relative flex items-center justify-between h-20 px-6">
               <div className="flex-1 flex justify-start">
-                <Link href="/" className="text-2xl font-bold text-slate-900">Roovo</Link>
+                <Link href="/" className="flex items-center text-2xl font-bold text-slate-900">
+                  <Image src="/logo.png" alt="Roovo" width={100} height={40} />
+                  {(pathname === '/messages' || pathname === '/bookings') && (
+                    <WordRotate
+                      words={[`.${pathname.split('/')[1]}`]}
+                      className="text-2xl font-bold text-slate-900"
+                    />
+                  )}
+                </Link>
               </div>
 
               <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md">
                 <AnimatePresence>
-                  {isScrolled && pathname !== '/messages' && !pathname.startsWith('/listing/') && (
+                  {isScrolled && pathname !== '/messages' && pathname !== '/bookings' && !pathname.startsWith('/listing/') && (
                     <ModernSearchBar
                       showSlidingText={!pathname.startsWith('/listing/')}
                       isCollapsed={isScrolled}
@@ -210,12 +220,19 @@ export default function RootLayout({
                 </AnimatePresence>
               </div>
               <div className="flex-1 flex justify-end">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
                   {isLoggedIn && isHost ? (
-                    <Link href="/hosting" className="  hover:text-indigo-500 flex items-center gap-2 text-slate-700 font-medium p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
-                      <Image src="/buttons/host_mode.png" alt="Switch to hosting" width={32} height={32} className="transition-transform duration-300 group-hover:scale-110" />
-                      <span>Switch to hosting</span>
-                    </Link>
+                    <>
+                      <Link 
+                        href="/hosting" 
+                        className="hover:text-indigo-500 flex items-center gap-2 text-slate-700 font-medium p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer"
+                        onClick={() => sessionStorage.setItem('isSwitchingToHost', 'true')}
+                      >
+                        <Image src="/buttons/host_mode.png" alt="Switch to hosting" width={32} height={32} className="transition-transform duration-300 group-hover:scale-110" />
+                        <span>Switch to hosting</span>
+                      </Link>
+                      <Notifications />
+                    </>
                   ) : (
                     <button onClick={() => setIsBecomeAHostOpen(true)} className="flex items-center gap-2 text-slate-700 font-medium hover:text-indigo-500 p-2 rounded-full transition-colors whitespace-nowrap group cursor-pointer">
                       <Image src="/icons/become_host.png" alt="Become a host" width={56} height={56} className="transition-transform duration-300 group-hover:scale-110" />
@@ -234,7 +251,7 @@ export default function RootLayout({
             </div>
 
             <AnimatePresence>
-              {!isScrolled && pathname !== '/messages' && !pathname.startsWith('/listing/') && (
+              {!isScrolled && pathname !== '/messages' && pathname !== '/bookings' && !pathname.startsWith('/listing/') && (
                 <motion.div
                   className=""
                   initial={{ height: 0, opacity: 0 }}

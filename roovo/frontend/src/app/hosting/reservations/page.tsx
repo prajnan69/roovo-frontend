@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import supabase from "@/services/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { API_BASE_URL } from "@/services/api";
+import BackButton from "@/components/BackButton";
 
 const ReservationsPage = () => {
   const [reservations, setReservations] = useState<any[]>([]);
@@ -41,24 +42,40 @@ const ReservationsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-black">
         <Spinner />
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Reservations</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-black text-white p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Reservations</h1>
+        <BackButton variant="dark" />
+      </div>
+      <div className="space-y-6">
         {reservations.map((reservation) => (
-          <div key={reservation.id} className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold">{reservation.listing.title}</h2>
-            <p>Guest: {reservation.guest.name}</p>
-            <p>Check-in: {new Date(reservation.start_date).toLocaleDateString()}</p>
-            <p>Check-out: {new Date(reservation.end_date).toLocaleDateString()}</p>
-            <p>Total Price: ₹{reservation.total_price}</p>
-            <p>Status: {reservation.status}</p>
+          <div key={reservation.id} className="bg-gray-900 p-6 rounded-lg shadow-lg">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-xl font-bold">{reservation.listing.title}</h2>
+                <p className="text-gray-400">Guest: {reservation.guest.name}</p>
+              </div>
+              <div className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                reservation.status === 'confirmed' ? 'bg-green-500' :
+                reservation.status === 'pending' ? 'bg-yellow-500' :
+                'bg-gray-500'
+              }`}>
+                {reservation.status}
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4 text-gray-300">
+              <p><strong>Check-in:</strong> {new Date(reservation.start_date).toLocaleDateString()}</p>
+              <p><strong>Check-out:</strong> {new Date(reservation.end_date).toLocaleDateString()}</p>
+              <p><strong>Total Price:</strong> ₹{reservation.total_price}</p>
+              <p><strong>Booked on:</strong> {new Date(reservation.created_at).toLocaleDateString()}</p>
+            </div>
           </div>
         ))}
       </div>

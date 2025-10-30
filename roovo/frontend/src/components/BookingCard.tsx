@@ -19,6 +19,7 @@ interface BookingCardProps {
   checkInDate: Date | null;
   checkOutDate: Date | null;
   onDateSelect: (date: Date) => void;
+  disabled?: boolean;
 }
 
 const BookingCard = ({ 
@@ -29,7 +30,8 @@ const BookingCard = ({
   onReserveClick,
   checkInDate,
   checkOutDate,
-  onDateSelect
+  onDateSelect,
+  disabled = false
 }: BookingCardProps) => {
   const router = useRouter();
   const [guests, setGuests] = useState(1);
@@ -151,9 +153,12 @@ const BookingCard = ({
       </div>
       <button
         onClick={handleReserve}
-        className="cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+        className={`cursor-pointer w-full mt-4 bg-indigo-500 text-white font-bold py-3 rounded-lg transition-colors ${
+          disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'
+        }`}
+        disabled={disabled}
       >
-        Reserve
+        {disabled ? 'This is your listing' : 'Reserve'}
       </button>
       <AnimatePresence>
         {showChatModal ? (

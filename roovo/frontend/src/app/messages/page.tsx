@@ -47,7 +47,7 @@ const UserMessagesPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-white text-black p-6 pt-8 scrollbar-hide">
+    <div className="flex flex-col h-[calc(100vh-5rem)] bg-white text-black p-6 pt-8 scrollbar-hide">
       {/* Layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 flex-grow">
         
@@ -100,7 +100,10 @@ const UserMessagesPage = () => {
                       ></motion.span>
                     </motion.div>
 
-                    <span className="text-sm">{convo.listing?.host?.name || 'Host'}</span>
+                    <div>
+                      <span className="text-sm font-semibold">{convo.host?.name || 'Host'}</span>
+                      <p className={`text-xs ${isSelected ? 'text-gray-200' : 'text-gray-500'}`}>{convo.listing.title}</p>
+                    </div>
                   </motion.div>
                 );
               })}

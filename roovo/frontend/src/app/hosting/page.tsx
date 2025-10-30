@@ -22,22 +22,20 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 const HostingPage = () => {
   const [isHost, setIsHost] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [initialLoad, setInitialLoad] = useState(true);
   const [userName, setUserName] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isNewListingModalOpen, setIsNewListingModalOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
   const [isModalLoading, setIsModalLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const cameFromHosting = sessionStorage.getItem('fromHosting');
-    console.log('cameFromHosting:', cameFromHosting, 'initialLoad:', initialLoad);
-    if (cameFromHosting) {
-      setInitialLoad(false);
-      sessionStorage.removeItem('fromHosting');
+    const isSwitching = sessionStorage.getItem('isSwitchingToHost');
+    if (isSwitching) {
+      setShowLoader(true);
+      sessionStorage.removeItem('isSwitchingToHost');
     }
 
     const checkUser = async () => {
@@ -53,12 +51,11 @@ const HostingPage = () => {
           setUserName(host.name || '');
         }
       }
-      // setLoading will be handled by the loader's onAnimationComplete callback
     };
     checkUser();
   }, []);
 
-  if (loading && initialLoad) {
+  if (showLoader) {
     return (
       <motion.div
         className="min-h-screen flex flex-col items-center justify-center"
@@ -66,10 +63,7 @@ const HostingPage = () => {
         transition={{ duration: 1, ease: "easeInOut" }}
       >
         <SwitchingToHostLoader
-          onAnimationComplete={() => {
-            setLoading(false);
-            setInitialLoad(false);
-          }}
+          onAnimationComplete={() => setShowLoader(false)}
           onTransitionStart={() => setIsTransitioning(true)}
         />
         <motion.div
@@ -77,7 +71,8 @@ const HostingPage = () => {
           animate={{ color: isTransitioning ? '#fff' : '#000' }}
           transition={{ duration: 1, ease: "easeInOut" }}
         >
-          <span>roovo&nbsp;</span>
+          <Image src="/logo.png" alt="Roovo" width={100} height={40} />
+          <div className="w-4" />
           <RotatingText
             texts={['travelling', 'hosting']}
             rotationInterval={1800}
@@ -92,11 +87,6 @@ const HostingPage = () => {
   }
 
   if (isHost) {
-    const handleNavigation = (url: string) => {
-      sessionStorage.setItem('fromHosting', 'true');
-      router.push(url);
-    };
-
     const cardData = [
       {
         color: '#060010',
@@ -104,7 +94,7 @@ const HostingPage = () => {
         description: 'View your reservations for today',
         label: 'Reservations',
         url: '/hosting/reservations',
-        onClick: () => handleNavigation('/hosting/reservations')
+        onClick: () => router.push('/hosting/reservations')
       },
       {
         color: '#060010',
@@ -112,7 +102,7 @@ const HostingPage = () => {
         description: 'Manage your availability',
         label: 'Planning',
         url: '/hosting/calendar',
-        onClick: () => handleNavigation('/hosting/calendar')
+        onClick: () => router.push('/hosting/calendar')
       },
       {
         color: '#060010',
@@ -120,7 +110,7 @@ const HostingPage = () => {
         description: 'Manage your properties',
         label: 'Properties',
         url: '/hosting/manage-listings',
-        onClick: () => handleNavigation('/hosting/manage-listings')
+        onClick: () => router.push('/hosting/manage-listings')
       },
       {
         color: '#060010',
@@ -128,7 +118,7 @@ const HostingPage = () => {
         description: 'Communicate with your guests',
         label: 'Communication',
         url: '/hosting/messages',
-        onClick: () => handleNavigation('/hosting/messages')
+        onClick: () => router.push('/hosting/messages')
       },
       {
         color: '#060010',
@@ -136,7 +126,7 @@ const HostingPage = () => {
         description: 'Manage your account details',
         label: 'Settings',
         url: '/hosting/account-settings',
-        onClick: () => handleNavigation('/hosting/account-settings')
+        onClick: () => router.push('/hosting/account-settings')
       },
       {
         color: '#060010',
@@ -144,7 +134,7 @@ const HostingPage = () => {
         description: 'Add a new property to your portfolio',
         label: 'New',
         url: '/hosting/new-listing',
-        onClick: () => handleNavigation('/hosting/new-listing')
+        onClick: () => router.push('/hosting/new-listing')
       }
     ];
 
@@ -188,10 +178,7 @@ const HostingPage = () => {
               spotlightRadius={300}
               particleCount={12}
               glowColor="132, 0, 255"
-              cardData={cardData.map(card => ({
-                ...card,
-                onClick: () => handleNavigation(card.url)
-              }))}
+              cardData={cardData}
             />
           </motion.div>
         </div>
@@ -201,46 +188,8 @@ const HostingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="w-full max-w-4xl text-center"
-      >
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Join our hosting community</h1>
-        <p className="text-slate-600 mb-12">Choose the path that's right for you.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link href="/import-listing" onClick={() => setIsNavigating(true)}>
-            <motion.div
-              className="flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all duration-200 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 h-64"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isNavigating ? (
-                <Spinner size={48} />
-              ) : (
-                <>
-                  <Image src="/icons/rehost.png" alt="Already hosted" width={96} height={96} className="mb-4" />
-                  <span className="text-xl font-semibold text-slate-800">Already hosted</span>
-                  <p className="text-slate-500 mt-2">Import your existing listing from another site.</p>
-                </>
-              )}
-            </motion.div>
-          </Link>
-          <Link href="/become-a-host" onClick={() => setIsNavigating(true)}>
-            <motion.div
-              className="flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all duration-200 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 h-64"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Image src="/icons/newhost.png" alt="New to hosting" width={96} height={96} className="mb-4" />
-              <span className="text-xl font-semibold text-slate-800">New to hosting</span>
-              <p className="text-slate-500 mt-2">Create a new listing from scratch.</p>
-            </motion.div>
-          </Link>
-        </div>
-      </motion.div>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <Spinner size={24} />
     </div>
   );
 };

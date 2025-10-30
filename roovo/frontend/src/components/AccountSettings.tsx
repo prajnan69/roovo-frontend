@@ -6,15 +6,14 @@ import { User, Shield, Bell, CreditCard, Globe, FileText, Lock } from 'lucide-re
 import { useRouter } from 'next/navigation';
 import { Spinner } from './ui/shadcn-io/spinner';
 import supabase from '@/services/api';
+import BackButton from './BackButton';
 
 const AccountSettings = () => {
   const [activeSection, setActiveSection] = useState('personal-info');
-  const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
-    sessionStorage.setItem('fromHosting', 'true');
     const fetchUserData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -41,15 +40,7 @@ const AccountSettings = () => {
       <div className="w-full max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Account settings</h1>
-          <button
-            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-            onClick={() => {
-              setLoading(true);
-              router.push('/hosting');
-            }}
-          >
-            {loading ? <Spinner /> : 'Done'}
-          </button>
+          <BackButton />
         </div>
 
         <div className="flex gap-8">

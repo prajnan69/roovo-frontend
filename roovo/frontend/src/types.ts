@@ -1,6 +1,7 @@
 export interface ListingData {
   id: number;
   host_id: string;
+  auto_bookable?: boolean;
   title: string;
   description?: string;
   primary_image_url?: string;

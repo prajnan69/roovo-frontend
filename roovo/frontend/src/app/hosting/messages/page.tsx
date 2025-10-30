@@ -8,6 +8,7 @@ import Chat from "@/components/Chat";
 import supabase from "@/services/api";
 import { API_BASE_URL } from "@/services/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import BackButton from "@/components/BackButton";
 
 const MessagesPage = () => {
   const router = useRouter();
@@ -15,6 +16,7 @@ const MessagesPage = () => {
   const [conversations, setConversations] = useState<any[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [hostNames, setHostNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -32,7 +34,27 @@ const MessagesPage = () => {
             const res = await fetch(`${API_BASE_URL}/api/chat/conversations/${host.id}`);
             if (res.ok) {
               const data = await res.json();
-              if (Array.isArray(data)) setConversations(data);
+              if (Array.isArray(data)) {
+                console.log('Conversations data:', data);
+                setConversations(data);
+                const hostIds = [...new Set(data.map((c) => c.host_id))];
+                const response = await fetch(`${API_BASE_URL}/api/users/by-ids`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ ids: hostIds }),
+                });
+                if (response.ok) {
+                  const { data: users } = await response.json();
+                  console.log('Users data:', users);
+                  const namesMap = users.reduce((acc: Record<string, string>, user: { id: string; name: string }) => {
+                    acc[user.id] = user.name;
+                    return acc;
+                  }, {});
+                  setHostNames(namesMap);
+                }
+              }
             }
           } catch (err) {
             console.error("Error fetching conversations:", err);
@@ -55,11 +77,6 @@ const MessagesPage = () => {
     };
   }, []);
 
-  const handleBackNavigation = () => {
-    setIsNavigatingBack(true);
-    router.back();
-  };
-
   return (
     <div className="min-h-screen bg-black text-white p-6 pt-8">
       {/* Header */}
@@ -69,34 +86,7 @@ const MessagesPage = () => {
         transition={{ duration: 0.6 }}
         className="flex items-center gap-4 mb-8"
       >
-        <motion.button
-          onClick={handleBackNavigation}
-          whileTap={{ scale: 0.8 }}
-          animate={{ rotate: isNavigatingBack ? 360 : 0 }}
-          transition={{ duration: 0.5 }}
-          disabled={isNavigatingBack}
-          className="rounded-full p-2 bg-gray-900 hover:bg-gray-800 transition"
-        >
-          {isNavigatingBack ? (
-            <Spinner />
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <motion.path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          )}
-        </motion.button>
-
+        <BackButton variant="dark" />
         <motion.h1
           className="text-4xl font-bold"
           initial={{ opacity: 0 }}
@@ -158,7 +148,7 @@ const MessagesPage = () => {
                       ></motion.span>
                     </motion.div>
 
-                    <span className="text-sm">{convo.guest.name}</span>
+                    <span className="text-sm">{convo.guest.name || 'Host'}</span>
                   </motion.div>
                 );
               })}

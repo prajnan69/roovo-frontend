@@ -12,17 +12,14 @@ import {
   MessageSquare,
 } from 'lucide-react';
 
-const sharedLinks = [
-  { href: '/help', label: 'Help Center', icon: <HelpCircle size={20} /> },
-];
+// const sharedLinks = [
+// ];
 
-const hostLinks = [
-  { href: '/manage-listings', label: 'Manage Listings', icon: <Home size={20} /> },
-  { href: '/manage-bookings', label: 'Manage Bookings', icon: <Briefcase size={20} /> },
-];
+// const hostLinks = [
+// ];
 
 const guestLinks = [
-    { href: '/search', label: 'Search', icon: <Search size={20} /> },
+    { href: '/bookings', label: 'Bookings', icon: <Briefcase size={20} /> },
     { href: '/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
     { href: '/resolution-center', label: 'Resolution Center', icon: <Shield size={20} /> },
 ];
@@ -47,20 +44,20 @@ const HamburgerMenu = ({ isOpen, onClose, onLogout }: HamburgerMenuProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             <nav className="flex flex-col space-y-2">
-              {sharedLinks.map(link => (
+              {/* {sharedLinks.map(link => (
+                <Link key={link.href} href={link.href} onClick={onClose} className="flex items-center gap-4 py-2 px-4 hover:bg-gray-100 rounded cursor-pointer">
+                  {link.icon}
+                  <span>{link.label}</span>
+                </Link>
+              ))} */}
+              {/* <div className="border-t border-gray-200 my-2"></div> */}
+              {/* {hostLinks.map(link => (
                 <Link key={link.href} href={link.href} onClick={onClose} className="flex items-center gap-4 py-2 px-4 hover:bg-gray-100 rounded cursor-pointer">
                   {link.icon}
                   <span>{link.label}</span>
                 </Link>
               ))}
-              <div className="border-t border-gray-200 my-2"></div>
-              {hostLinks.map(link => (
-                <Link key={link.href} href={link.href} onClick={onClose} className="flex items-center gap-4 py-2 px-4 hover:bg-gray-100 rounded cursor-pointer">
-                  {link.icon}
-                  <span>{link.label}</span>
-                </Link>
-              ))}
-              <div className="border-t border-gray-200 my-2"></div>
+              <div className="border-t border-gray-200 my-2"></div> */}
               {guestLinks.map(link => (
                 <Link key={link.href} href={link.href} onClick={onClose} className="flex items-center gap-4 py-2 px-4 hover:bg-gray-100 rounded cursor-pointer">
                   {link.icon}
