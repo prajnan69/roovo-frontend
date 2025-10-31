@@ -106,9 +106,10 @@ type SlidingNumberProps = React.ComponentProps<'span'> & {
   transition?: SpringOptions;
 };
  
-function SlidingNumber({
-  ref,
-  number,
+const SlidingNumber = React.forwardRef<HTMLSpanElement, SlidingNumberProps>(
+  function SlidingNumber(
+    {
+      number,
   className,
   inView = false,
   inViewMargin = '0px',
@@ -121,8 +122,10 @@ function SlidingNumber({
     damping: 20,
     mass: 0.4,
   },
-  ...props
-}: SlidingNumberProps) {
+      ...props
+    },
+    ref,
+  ) {
   const localRef = React.useRef<HTMLSpanElement>(null);
   React.useImperativeHandle(ref, () => localRef.current!);
  
@@ -230,6 +233,7 @@ function SlidingNumber({
       )}
     </span>
   );
-}
+  },
+);
  
 export { SlidingNumber, type SlidingNumberProps };

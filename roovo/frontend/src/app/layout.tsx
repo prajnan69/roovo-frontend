@@ -15,6 +15,7 @@ import Link from "next/link";
 import supabase from '@/services/api';
 import WordRotate from "@/components/ui/word-rotate";
 import Notifications from "@/components/Notifications";
+import Support from "@/components/Support";
 
 const inter = Inter({
 variable: "--font-inter",
@@ -44,7 +45,7 @@ export default function RootLayout({
   const headerRef = useRef<HTMLDivElement>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const prevPathname = useRef(pathname);
-  const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname === '/import-listing' || pathname.startsWith('/hosting');
+  const isLoginPage = pathname === '/login' || pathname === '/become-a-host' || pathname.startsWith('/hosting');
   const [isMobile, setIsMobile] = useState(false);
 
   const checkUser = useCallback(async () => {
@@ -152,6 +153,7 @@ export default function RootLayout({
         <link rel="preload" href="/icons/man_t.png" as="image" />
         <link rel="preload" href="/icons/man_h.png" as="image" />
         <link rel="preload" href="/icons/globe_t.png" as="image" />
+        <link rel="preload" href="/icons/login.png" as="image" />
       </head>
       <body className="antialiased bg-slate-50">
         <Login 
@@ -187,9 +189,9 @@ export default function RootLayout({
               <div className="flex-1 flex justify-start">
                 <Link href="/" className="flex items-center text-2xl font-bold text-slate-900">
                   <Image src="/logo.png" alt="Roovo" width={100} height={40} />
-                  {(pathname === '/messages' || pathname === '/bookings') && (
+                  {(pathname === '/messages' || pathname === '/bookings' || pathname === '/verify' || pathname === '/import-listing' || pathname === '/profile') && (
                     <WordRotate
-                      words={[`.${pathname.split('/')[1]}`]}
+                      words={[`.${pathname.split('-')[0].slice(1)}`]}
                       className="text-2xl font-bold text-slate-900"
                     />
                   )}
@@ -198,7 +200,7 @@ export default function RootLayout({
 
               <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md">
                 <AnimatePresence>
-                  {isScrolled && pathname !== '/messages' && pathname !== '/bookings' && !pathname.startsWith('/listing/') && (
+                  {isScrolled && pathname !== '/messages' && pathname !== '/bookings' && pathname !== '/verify' && pathname !== '/import-listing' && pathname !== '/profile' && !pathname.startsWith('/listing/') && (
                     <ModernSearchBar
                       showSlidingText={!pathname.startsWith('/listing/')}
                       isCollapsed={isScrolled}
@@ -251,7 +253,7 @@ export default function RootLayout({
             </div>
 
             <AnimatePresence>
-              {!isScrolled && pathname !== '/messages' && pathname !== '/bookings' && !pathname.startsWith('/listing/') && (
+              {!isScrolled && pathname !== '/messages' && pathname !== '/bookings' && pathname !== '/verify' && pathname !== '/import-listing' && pathname !== '/profile' && !pathname.startsWith('/listing/') && (
                 <motion.div
                   className=""
                   initial={{ height: 0, opacity: 0 }}
@@ -287,6 +289,7 @@ export default function RootLayout({
         <main >
           {children}
         </main>
+        <Support />
         {!isLoginPage && isMobile && !pathname.startsWith('/listing/') && <BottomNavBar />}
       </body>
     </html>

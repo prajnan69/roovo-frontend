@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import ListingConfirmation from "@/components/import/ListingConfirmation";
 import ConfirmPriceAndList from "@/components/import/ConfirmPriceAndList";
@@ -23,6 +24,7 @@ const loadingStates = [
 ];
 
 const ImportListingPage = () => {
+  const router = useRouter();
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [scrapedData, setScrapedData] = useState<ListingData | null>(null);
@@ -31,10 +33,22 @@ const ImportListingPage = () => {
   const [importedListingId, setImportedListingId] = useState<string | null>(null);
   const [currentLoadingState, setCurrentLoadingState] = useState(0);
   const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isListingComplete, setIsListingComplete] = useState(false);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
     setIsPageLoading(false);
   }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isListingComplete && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (isListingComplete && countdown === 0) {
+      router.push("/");
+    }
+    return () => clearTimeout(timer);
+  }, [isListingComplete, countdown, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,6 +170,11 @@ const ImportListingPage = () => {
         throw new Error("Failed to create listing.");
       }
 
+      const { data: newListing } = await response.json();
+      if (newListing && newListing.id) {
+        setImportedListingId(newListing.id);
+      }
+
       setStep("pricing");
     } catch (err) {
       console.error("Error creating listing:", err);
@@ -164,16 +183,31 @@ const ImportListingPage = () => {
     }
   };
 
-  const handlePriceConfirm = (price: number, model: "subscription" | "casual") => {
-    console.log("✅ Listing confirmed:", {
-      ...scrapedData,
-      price,
-      model,
-    });
-    alert("Listing confirmed! (Check console for data)");
-    setScrapedData(null);
-    setUrl("");
-    setStep("confirmation");
+  const handlePriceConfirm = async (price: number, model: "casual", autoBookable: boolean, listingId: string) => {
+    if (!listingId) {
+      setError("No listing ID found to update the price.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/listings/${listingId}/price`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price_per_night: price }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update listing price.");
+      }
+
+      console.log("✅ Listing price updated successfully");
+      setIsListingComplete(true);
+    } catch (err) {
+      console.error("Error updating listing price:", err);
+      if (err instanceof Error) setError(err.message);
+      else setError("An unexpected error occurred while updating the price.");
+    }
   };
 
   const handleCancel = () => {
@@ -192,74 +226,93 @@ const ImportListingPage = () => {
         <>
           <Loader loadingStates={loadingStates} loading={isLoading} duration={2000} currentStatus={currentLoadingState} />
           <main>
-            {scrapedData && step === "confirmation" && (
-              <ListingConfirmation
-                data={scrapedData}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-              />
-            )}
-            {scrapedData && step === "pricing" && (
-              <ConfirmPriceAndList
-                hostName={scrapedData.host_information.name}
-                importedListingId={importedListingId!}
-                scrapedData={scrapedData}
-                onConfirm={handlePriceConfirm}
-              />
-            )}
-            {!scrapedData && (
-              <div className="flex items-center justify-center min-h-screen">
+            {isListingComplete ? (
+              <div className="flex flex-col items-center justify-center min-h-screen text-center">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  <div className="text-center md:text-left">
-                    <Image
-                      src="/icons/import_listing.png"
-                      alt="Import Listing"
-                      width={224}
-                      height={224}
-                      className="mx-auto md:mx-0 mb-6"
-                    />
-                    <h1 className="text-4xl font-bold text-slate-900 mb-4">
-                      Import your listing
-                    </h1>
-                    <p className="text-slate-600">
-                      Enter the URL of your existing listing to automatically import
-                      your property details, amenities, and photos.
-                    </p>
-                  </div>
-
-                  <div className="w-full">
-                    <form
-                      onSubmit={(e) => {
-                        console.log("📝 Form submitted event triggered");
-                        handleSubmit(e);
-                      }}
-                      className="flex flex-col gap-4"
-                    >
-                      <input
-                        type="text"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        placeholder="https://www.airbnb.com/rooms/..."
-                        className="w-full bg-slate-100 border-2 border-slate-200 rounded-lg p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        required
-                      />
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="cursor-pointer bg-indigo-500 text-white font-bold py-4 px-8 rounded-lg hover:bg-indigo-600 transition-colors duration-300 disabled:bg-gray-300"
-                      >
-                        {isLoading ? "Importing..." : "Import"}
-                      </button>
-                    </form>
-                    {error && <p className="text-red-500 mt-4">{error}</p>}
-                  </div>
+                  <h1 className="text-4xl font-bold text-slate-900 mb-4">
+                    Listing Complete ✅
+                  </h1>
+                  <p className="text-slate-600">
+                    Redirecting to homepage in {countdown} seconds...
+                  </p>
                 </motion.div>
               </div>
+            ) : (
+              <>
+                {scrapedData && step === "confirmation" && (
+                  <ListingConfirmation
+                    data={scrapedData}
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
+                  />
+                )}
+                {scrapedData && step === "pricing" && (
+                  <ConfirmPriceAndList
+                    hostName={scrapedData.host_information.name}
+                    importedListingId={importedListingId!}
+                    scrapedData={scrapedData}
+                    onConfirm={handlePriceConfirm}
+                  />
+                )}
+                {!scrapedData && (
+                  <div className="flex items-center justify-center min-h-screen">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                      className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+                    >
+                      <div className="text-center md:text-left">
+                        <Image
+                          src="/icons/import_listing.png"
+                          alt="Import Listing"
+                          width={224}
+                          height={224}
+                          className="mx-auto md:mx-0 mb-6"
+                        />
+                        <h1 className="text-4xl font-bold text-slate-900 mb-4">
+                          Import your listing
+                        </h1>
+                        <p className="text-slate-600">
+                          Enter the URL of your existing listing to automatically import
+                          your property details, amenities, and photos.
+                        </p>
+                      </div>
+
+                      <div className="w-full">
+                        <form
+                          onSubmit={(e) => {
+                            console.log("📝 Form submitted event triggered");
+                            handleSubmit(e);
+                          }}
+                          className="flex flex-col gap-4"
+                        >
+                          <input
+                            type="text"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            placeholder="https://www.airbnb.com/rooms/..."
+                            className="w-full bg-slate-100 border-2 border-slate-200 rounded-lg p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            required
+                          />
+                          <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="cursor-pointer bg-indigo-500 text-white font-bold py-4 px-8 rounded-lg hover:bg-indigo-600 transition-colors duration-300 disabled:bg-gray-300"
+                          >
+                            {isLoading ? "Importing..." : "Import"}
+                          </button>
+                        </form>
+                        {error && <p className="text-red-500 mt-4">{error}</p>}
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </>

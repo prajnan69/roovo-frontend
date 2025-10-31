@@ -21,6 +21,7 @@ import {
 const guestLinks = [
     { href: '/bookings', label: 'Bookings', icon: <Briefcase size={20} /> },
     { href: '/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
+    { href: '/verify', label: 'Verify', icon: <Shield size={20} /> },
     { href: '/resolution-center', label: 'Resolution Center', icon: <Shield size={20} /> },
 ];
 

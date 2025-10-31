@@ -23,7 +23,7 @@ const ReservationsPage = () => {
 
         if (host) {
           try {
-            const response = await fetch(`${API_BASE_URL}/api/reservations/host/${host.id}`);
+            const response = await fetch(`${API_BASE_URL}/api/reservations/${host.id}`);
             if (!response.ok) {
               throw new Error('Failed to fetch reservations');
             }
@@ -50,9 +50,9 @@ const ReservationsPage = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Reservations</h1>
+      <div className="flex items-center mb-8">
         <BackButton variant="dark" />
+        <h1 className="text-3xl font-bold ml-4">Reservations</h1>
       </div>
       <div className="space-y-6">
         {reservations.map((reservation) => (

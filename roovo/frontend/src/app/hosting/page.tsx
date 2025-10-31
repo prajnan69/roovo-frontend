@@ -164,7 +164,7 @@ const HostingPage = () => {
         </Navbar>
         <div className="flex flex-col items-center justify-center w-full">
           <div className="w-full px-3 text-center">
-            <SplitText text={`Welcome, ${userName}👋`} tag="h1" className="text-4xl font-bold mt-12" />
+            <SplitText text={`Welcome to hosting dasboard, ${userName}👋`} tag="h1" className="text-4xl font-bold mt-12" />
           </div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
             <MagicBento

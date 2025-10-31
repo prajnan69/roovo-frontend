@@ -109,7 +109,7 @@ const Notifications = () => {
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
                     whileHover={{ backgroundColor: "#f9fafb" }}
-                    className="p-4 border-b border-gray-200 cursor-pointer"
+                    className={`p-4 border-b border-gray-200 cursor-pointer ${notification.is_read ? 'text-gray-400' : ''}`}
                   >
                     <p className="text-sm">{notification.message}</p>
                     <span className="text-xs text-gray-400">{new Date(notification.created_at).toLocaleString()}</span>
